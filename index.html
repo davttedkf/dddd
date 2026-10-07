@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSP Recruit Study System — Training Division</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230B2F55"/><path d="M25 15 H75 L62 85 H38 Z" fill="%23F0B323"/></svg>'>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Public+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================= FOUNDATION ================= */
+:root{
+  --navy:#0B2F55; --navy-d:#071E38; --navy-m:#123C66;
+  --gold:#F0B323; --gold-b:#FFC94A; --gold-d:#8F6C10;
+  --steel:#F1F3F6; --line:#C9D2DC; --ink:#16283C; --dim:#5B6B7E;
+  --red:#A4342A; --bone:#E8EDF4; --dline:#24466E; --ddim:#A7B6C8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--steel);color:var(--ink);font-family:'Public Sans',sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.cond{font-family:'Barlow Condensed',sans-serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--navy)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+::selection{background:var(--gold);color:var(--navy-d)}
+.wrap{max-width:1150px;margin:0 auto;padding:0 24px}
+
+.btn{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  font-size:1.05rem;padding:13px 26px;border:2px solid transparent;background:transparent;transition:.12s;display:inline-block;text-decoration:none}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:var(--navy-d)}
+.btn-gold:hover{background:var(--gold-b);border-color:var(--gold-b)}
+.btn-navy{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy-m)}
+.btn-ghost{border-color:var(--navy);color:var(--navy)}
+.btn-ghost:hover{background:var(--navy);color:#fff}
+.btn-ghost.lt{border-color:var(--bone);color:var(--bone)}
+.btn-ghost.lt:hover{background:var(--bone);color:var(--navy-d)}
+.btn-sm{padding:7px 14px;font-size:.85rem}
+
+/* ================= UTILITY BAR ================= */
+#utility{background:var(--navy-d);color:var(--ddim);font-size:11.5px;letter-spacing:.06em}
+#utility .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-top:7px;padding-bottom:7px}
+#utility a{color:var(--ddim);text-decoration:none;margin-right:18px}
+#utility a:hover{color:var(--gold-b);text-decoration:underline}
+#utility .u911{color:#FFB4A8;font-weight:600;letter-spacing:.14em}
+#utility .uright{display:flex;align-items:center;gap:14px}
+#clock{color:var(--gold-b);letter-spacing:.1em}
+#muteBtn{background:none;border:1px solid var(--dline);color:var(--bone);width:30px;height:26px;display:flex;align-items:center;justify-content:center}
+#muteBtn:hover{border-color:var(--gold);color:var(--gold-b)}
+#muteBtn .slash{display:none}
+#muteBtn.muted .slash{display:block}
+#muteBtn.muted{color:var(--ddim)}
+
+/* ================= MASTHEAD ================= */
+#masthead{background:var(--navy);color:#fff;border-bottom:4px solid var(--gold)}
+#masthead .wrap{display:flex;align-items:center;gap:22px;padding-top:22px;padding-bottom:22px}
+.seal{width:92px;height:92px;flex:none}
+.mh-title h1{font-weight:800;text-transform:uppercase;font-size:clamp(1.7rem,3.6vw,2.7rem);letter-spacing:.03em;line-height:1}
+.mh-title .commonwealth{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--gold-b);letter-spacing:.24em;margin-bottom:5px}
+.mh-title .sub{font-family:'IBM Plex Mono';font-size:11px;color:var(--ddim);letter-spacing:.18em;margin-top:6px}
+.mh-record{margin-left:auto;background:var(--navy-d);border:1px solid var(--dline);padding:14px 18px;min-width:250px}
+.mh-record .r-label{font-family:'IBM Plex Mono';font-size:10px;color:var(--gold-b);letter-spacing:.2em;margin-bottom:10px}
+.mh-record .r-row{display:flex;justify-content:space-between;align-items:baseline;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--ddim);letter-spacing:.1em;margin-top:7px}
+.mh-record .r-row strong{font-family:'Barlow Condensed';font-size:1.25rem;letter-spacing:.05em;color:#fff}
+.mh-record .pbar{height:8px;border:1px solid var(--dline);margin-top:10px}
+#pbarFill{height:100%;background:var(--gold);width:0%;transition:width .6s}
+
+/* ================= NAV ================= */
+#mainnav{position:sticky;top:0;z-index:60;background:#fff;border-bottom:2px solid var(--navy);box-shadow:0 2px 10px rgba(11,47,85,.08)}
+#mainnav .wrap{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+#mainnav a{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+  font-size:1.02rem;color:var(--navy);text-decoration:none;padding:13px 16px;border-bottom:3px solid transparent;margin-bottom:-2px}
+#mainnav a:hover{background:var(--steel)}
+#mainnav a.active{border-bottom-color:var(--gold);color:var(--navy-d)}
+.navscore{margin-left:auto;font-size:12px;color:var(--navy);letter-spacing:.1em;font-weight:600}
+#navChip{background:var(--gold);color:var(--navy-d);font-weight:600;font-size:12.5px;padding:4px 12px;letter-spacing:.06em;display:inline-block;transition:transform .2s}
+#navChip.pulse{transform:scale(1.12)}
+
+/* ================= NOTICE BAR ================= */
+.notice{background:#FFF3D1;border-bottom:1px solid #E4C468;color:#6B5410;font-size:12.5px;line-height:1.5}
+.notice .wrap{padding-top:9px;padding-bottom:9px;display:flex;gap:10px;align-items:baseline}
+.notice strong{letter-spacing:.08em}
+.notice a{color:#6B5410;font-weight:700}
+
+/* ================= TICKER ================= */
+.ticker{background:var(--navy-d);border-bottom:2px solid var(--gold);overflow:hidden}
+.ticker-inner{display:flex;width:max-content;animation:tick 46s linear infinite}
+.ticker-inner span{white-space:nowrap;padding:8px 0;color:var(--gold-b);font-weight:500;font-size:12px;letter-spacing:.14em}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* ================= HERO ================= */
+.hero{background:#fff;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:52px;padding-top:60px;padding-bottom:56px;position:relative}
+.crumbs{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);letter-spacing:.08em;margin-bottom:26px}
+.crumbs b{color:var(--navy);font-weight:600}
+.kicker{color:var(--gold-d);font-size:11px;letter-spacing:.2em;margin-bottom:18px}
+.hero h2{font-weight:800;text-transform:uppercase;font-size:clamp(2.6rem,5.6vw,4.6rem);line-height:.96;color:var(--navy);letter-spacing:.005em}
+.hero h2 em{font-style:normal;color:var(--gold-d)}
+.lede{margin:22px 0 28px;max-width:56ch;font-size:1.05rem;line-height:1.7;color:#33455C}
+.hero-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero-cta .mono{font-size:10.5px;color:var(--dim);letter-spacing:.12em}
+.hero-watermark{position:absolute;right:-70px;top:-60px;width:420px;height:420px;opacity:.05;pointer-events:none}
+
+.recpanel{background:#fff;border:1px solid var(--line);box-shadow:0 1px 4px rgba(11,47,85,.1);align-self:start;position:relative;z-index:1}
+.recpanel .rp-head{background:var(--navy);color:#fff;padding:11px 18px;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.2em}
+.recpanel .rp-body{padding:18px}
+.recpanel label{display:block;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--dim);letter-spacing:.16em;margin-bottom:6px}
+#nameInput{width:100%;background:transparent;border:0;border-bottom:1.5px solid var(--line);color:var(--navy);
+  font-family:'IBM Plex Mono';font-size:15px;letter-spacing:.08em;padding:5px 0;text-transform:uppercase}
+#nameInput:focus{outline:none;border-bottom-color:var(--gold)}
+.rstat{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--dim);letter-spacing:.12em}
+.rstat strong{font-family:'Barlow Condensed';font-size:1.6rem;letter-spacing:.04em;color:var(--navy)}
+.rp-note{margin-top:10px;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--gold-d);letter-spacing:.08em}
+.rp-lessons{margin-top:14px;font-family:'IBM Plex Mono';font-size:10.5px;color:var(--dim);letter-spacing:.1em}
+
+/* ================= SECTIONS ================= */
+main section{padding-top:70px;padding-bottom:70px}
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:3px solid var(--navy);padding-bottom:14px;margin-bottom:34px;flex-wrap:wrap}
+.shead .kick{font-family:'IBM Plex Mono';font-size:11px;color:var(--gold-d);letter-spacing:.2em;margin-bottom:8px}
+.shead h2{font-weight:800;text-transform:uppercase;font-size:clamp(2.2rem,4.6vw,3.4rem);line-height:1;color:var(--navy)}
+.part{font-family:'IBM Plex Mono';font-size:11px;border:1.5px solid var(--navy);color:var(--navy);padding:5px 12px;letter-spacing:.14em;white-space:nowrap}
+.dark .part{border-color:var(--bone);color:var(--bone)}
+
+/* ---- exam range rows ---- */
+.exam-intro{max-width:72ch;color:#33455C;line-height:1.65;margin-bottom:28px;font-size:1rem}
+#syllabus{list-style:none}
+.drill-row{display:grid;grid-template-columns:110px 1fr 190px 56px;grid-template-areas:"num main side go";
+  align-items:center;gap:20px;padding:24px 14px;background:#fff;border:1px solid var(--line);border-top:none;cursor:pointer;transition:.13s}
+.drill-row:first-child{border-top:1px solid var(--line)}
+.drill-row:hover{background:#EEF3FA;border-color:var(--navy)}
+.d-num{grid-area:num;text-align:center}
+.d-num .cap{display:block;font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.22em;color:var(--gold-d);margin-bottom:2px}
+.d-num .n{font-family:'Barlow Condensed';font-weight:800;font-size:3rem;line-height:1;color:transparent;-webkit-text-stroke:2px var(--navy)}
+.drill-row:hover .d-num .n{-webkit-text-stroke-color:var(--gold-d)}
+.d-main{grid-area:main}
+.d-main h3{font-weight:700;text-transform:uppercase;font-size:1.55rem;letter-spacing:.03em;line-height:1;color:var(--navy)}
+.d-main p{margin-top:6px;font-size:.95rem;line-height:1.55;max-width:58ch;color:#33455C}
+.d-side{grid-area:side;text-align:right;font-size:11.5px;letter-spacing:.08em;line-height:2.1;color:var(--dim)}
+.d-side .pb{color:var(--red);font-weight:600}
+.drill-row:hover .d-side .pb{color:var(--gold-d)}
+.d-go{grid-area:go;width:50px;height:50px;border:2px solid var(--navy);display:flex;align-items:center;justify-content:center;color:var(--navy);transition:.13s}
+.drill-row:hover .d-go{background:var(--gold);border-color:var(--gold);color:var(--navy-d)}
+.drill-row:hover .d-go svg{transform:translateX(4px)}
+.d-go svg{transition:.15s}
+.syll-note{margin-top:22px;font-family:'IBM Plex Mono';font-size:11.5px;color:var(--dim);letter-spacing:.05em}
+
+/* ---- LESSONS ---- */
+#lessons{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.lesson{border:1px solid var(--line);border-top:none;background:#fff}
+.lesson:first-of-type{border-top:1px solid var(--line)}
+.l-head{width:100%;display:grid;grid-template-columns:110px 1fr auto auto 30px;gap:16px;align-items:center;
+  text-align:left;background:none;border:none;padding:20px 16px;transition:.12s}
+.l-head:hover{background:#EEF3FA}
+.l-num{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;color:var(--gold-d);font-weight:600}
+.l-title{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:1.5rem;letter-spacing:.03em;color:var(--navy);line-height:1}
+.l-meta{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--dim);letter-spacing:.1em;white-space:nowrap}
+.l-chip{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.12em;padding:4px 10px;border:1.5px solid var(--line);color:var(--dim);white-space:nowrap}
+.l-chip.done{background:var(--navy);border-color:var(--navy);color:var(--gold-b)}
+.l-caret{color:var(--navy);transition:.2s}
+.lesson.open .l-caret{transform:rotate(180deg)}
+.l-body{display:none;padding:6px 26px 28px;border-top:1px dashed var(--line)}
+.lesson.open .l-body{display:block;animation:lfade .25s}
+@keyframes lfade{from{opacity:0;transform:translateY(-4px)}}
+.l-body h4{font-weight:700;text-transform:uppercase;font-size:1.15rem;letter-spacing:.04em;color:var(--navy);margin:20px 0 8px}
+.l-body p{line-height:1.75;color:#2A3B50;max-width:76ch;margin-bottom:10px;font-size:.98rem}
+.l-body ul{margin:0 0 12px 20px;color:#2A3B50;line-height:1.75;font-size:.98rem}
+.l-body li{margin-bottom:5px}
+.kp{background:var(--steel);border-left:5px solid var(--gold);padding:16px 20px;margin:18px 0;max-width:76ch}
+.kp strong{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.18em;color:var(--gold-d)}
+.kp ul{margin:8px 0 0 18px}
+.l-foot{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;max-width:76ch}
+.duo>div{border:1px solid var(--line);padding:14px 16px}
+.duo .duo-tag{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.16em;margin-bottom:8px;color:var(--red)}
+.duo>div:last-child .duo-tag{color:#1F7A4D}
+.duo p{margin:0;font-size:.93rem}
+.ctable{width:100%;max-width:76ch;border-collapse:collapse;margin:12px 0;font-size:.92rem}
+.ctable th{background:var(--navy);color:#fff;text-align:left;padding:8px 12px;font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.14em;font-weight:500}
+.ctable td{border:1px solid var(--line);padding:7px 12px}
+.ctable td:first-child{font-family:'IBM Plex Mono';font-weight:600;color:var(--navy);white-space:nowrap}
+.phab{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;max-width:76ch;margin:12px 0}
+.phab span{font-family:'IBM Plex Mono';font-size:12px;border:1px solid var(--line);padding:6px 10px;background:var(--steel)}
+.phab b{color:var(--gold-d)}
+
+/* ---- STUDY HALL (dark) ---- */
+#study{background:var(--navy);color:var(--bone)}
+#study .shead{border-bottom-color:var(--gold)}
+#study .shead h2{color:#fff}
+#study .shead .kick{color:var(--gold-b)}
+.study-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:44px;align-items:start}
+.flashpanel{background:var(--navy-d);border:1px solid var(--dline);padding:26px;position:sticky;top:76px}
+.flashpanel h3{font-size:12px;color:var(--gold-b);letter-spacing:.2em;font-family:'IBM Plex Mono';font-weight:500;margin-bottom:14px}
+.flashpanel p{color:var(--ddim);font-size:.95rem;line-height:1.65;margin-bottom:14px}
+.flash-fc{font-family:'IBM Plex Mono';font-size:12.5px;color:var(--ddim);letter-spacing:.1em;margin:0 0 16px}
+.flash-fc b{color:var(--gold-b)}
+.plan{list-style:none;margin-top:18px;border-top:1px solid var(--dline)}
+.plan li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--dline);font-size:.93rem;color:var(--bone)}
+.plan .t{font-family:'IBM Plex Mono';color:var(--gold-b);font-size:11px;flex:none;width:58px;letter-spacing:.06em}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vcard{display:block;background:var(--navy-d);border:1px solid var(--dline);padding:18px 20px;text-decoration:none;transition:.13s;color:var(--bone)}
+.vcard:hover{border-color:var(--gold);transform:translateY(-2px)}
+.v-tag{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.18em;color:var(--gold-b);display:block;margin-bottom:8px}
+.vcard h3{font-weight:700;text-transform:uppercase;font-size:1.25rem;letter-spacing:.03em;line-height:1.1;color:#fff}
+.vcard p{font-size:.86rem;color:var(--ddim);line-height:1.55;margin:8px 0 12px}
+.v-go{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--gold-b);border-bottom:1px solid var(--gold-d);padding-bottom:2px}
+.vnote{grid-column:1/-1;border:1px dashed var(--dline);padding:14px 18px;font-family:'IBM Plex Mono';font-size:11px;color:var(--ddim);letter-spacing:.05em;line-height:1.7}
+.vnote b{color:var(--gold-b)}
+.official-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+
+/* ---- FITNESS ---- */
+#fitness .grid2{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start}
+.stable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line)}
+.stable caption{caption-side:top;text-align:left;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;color:var(--navy);padding-bottom:10px;font-weight:600}
+.stable th{background:var(--navy);color:#fff;text-align:left;padding:10px 14px;font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.14em;font-weight:500}
+.stable td{border:1px solid var(--line);padding:11px 14px;font-size:.95rem}
+.stable td:last-child{font-family:'IBM Plex Mono';font-weight:600;color:var(--navy)}
+.fine{font-size:11.5px;color:var(--dim);margin-top:12px;line-height:1.6;max-width:60ch}
+.habits{background:#fff;border:1px solid var(--line)}
+.habits .rp-head{background:var(--navy);color:#fff;padding:11px 18px;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.18em}
+.habits .rp-body{padding:16px 18px}
+#habitCount{font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);margin-bottom:10px;letter-spacing:.12em}
+.habits ul{list-style:none}
+.habits li label{display:flex;align-items:center;gap:12px;padding:10px 0;cursor:pointer;font-size:.95rem;color:var(--ink);border-bottom:1px solid var(--steel)}
+.habits li:last-child label{border-bottom:none}
+.habits input{position:absolute;opacity:0;pointer-events:none}
+.habits .box{width:18px;height:18px;border:2px solid var(--navy);position:relative;flex:none}
+.habits input:checked + .box{background:var(--gold);border-color:var(--gold)}
+.habits input:checked + .box::after{content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;
+  border:solid var(--navy-d);border-width:0 3px 3px 0;transform:rotate(42deg)}
+.habits input:checked ~ .htxt{text-decoration:line-through;color:var(--dim)}
+
+/* ---- RECORDS ---- */
+#records{background:#fff;border-top:1px solid var(--line)}
+#records .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;align-items:start}
+.rtable{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line)}
+.rtable th{background:var(--navy);color:#fff;text-align:left;padding:9px 14px;font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.14em;font-weight:500}
+.rtable td{border:1px solid var(--line);padding:8px 14px;font-size:.93rem}
+.rtable td:nth-child(2){font-family:'IBM Plex Mono';color:var(--navy);font-weight:600}
+.rtable tr.cur td{background:#FFF6DE;border-left:4px solid var(--gold)}
+.rtable .st{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.1em;color:var(--dim)}
+.rtable tr.cur .st{color:var(--gold-d);font-weight:600}
+.rtable tr.ach .st{color:#1F7A4D}
+
+/* ================= FOOTER ================= */
+footer{background:var(--navy-d);border-top:4px solid var(--gold);padding:56px 24px 44px;text-align:center;color:var(--ddim)}
+footer .seal{margin:0 auto 18px}
+footer .shout{font-family:'Barlow Condensed';font-weight:800;text-transform:uppercase;color:#fff;
+  font-size:clamp(1.7rem,3.6vw,2.6rem);letter-spacing:.04em}
+footer .shout em{font-style:normal;color:var(--gold-b)}
+footer .values{font-family:'IBM Plex Mono';font-size:11.5px;letter-spacing:.3em;color:var(--gold-b);margin-top:12px}
+footer .fine{max-width:74ch;margin:20px auto 0;font-family:'IBM Plex Mono';font-size:10.5px;line-height:1.9;letter-spacing:.04em;color:#7E93AB}
+footer .flinks{margin-top:18px;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.08em}
+footer .flinks a{color:var(--ddim);margin:0 12px}
+footer .flinks a:hover{color:var(--gold-b)}
+
+/* ================= OVERLAY ================= */
+#overlay{position:fixed;inset:0;z-index:100;background:var(--navy-d);overflow-y:auto}
+.ov-head{position:sticky;top:0;z-index:5;background:var(--navy-d);border-bottom:2px solid var(--gold);
+  display:flex;justify-content:space-between;align-items:center;padding:14px 22px;gap:14px}
+#ovName{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:1.4rem;letter-spacing:.05em;color:#fff}
+.ov-meta{display:flex;align-items:center;gap:18px}
+#ovProgress{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--gold-b);letter-spacing:.12em}
+#ovBody{padding:44px 22px 80px}
+.qwrap,.brief,.results{max-width:760px;margin:0 auto}
+.brief .tag{font-size:11.5px;color:var(--gold-b);letter-spacing:.2em;margin-bottom:12px;font-family:'IBM Plex Mono'}
+.brief h2,.results h2{font-weight:800;text-transform:uppercase;color:#fff;font-size:clamp(2.1rem,4.6vw,3rem);line-height:1;margin-bottom:6px}
+.brief p{color:var(--ddim);font-size:1rem;line-height:1.7;margin:14px 0;max-width:60ch}
+.brief .dim{opacity:.6;font-size:.84rem;font-family:'IBM Plex Mono';letter-spacing:.04em}
+.brief .btn{margin-top:14px}
+
+.qtimer{height:6px;background:#1B3A5E;margin:26px auto 0;max-width:640px}
+#qbar{height:100%;background:var(--gold);width:100%}
+.passage{background:var(--bone);color:var(--ink);border-left:6px solid var(--gold);padding:18px 22px;margin-bottom:22px;font-size:.99rem;line-height:1.7}
+.passage .p-tag{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.16em;color:var(--red);margin-bottom:8px}
+.qprompt{font-family:'Barlow Condensed';font-weight:700;font-size:1.8rem;color:#fff;line-height:1.12;text-transform:uppercase;margin-bottom:6px}
+.q-hint{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--ddim);letter-spacing:.12em;margin-bottom:16px}
+.opts{margin-top:14px}
+.opt{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:transparent;
+  border:2px solid var(--dline);color:var(--bone);padding:13px 16px;margin-bottom:10px;font-size:1rem;font-weight:500;transition:.12s}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--gold);background:var(--gold);color:var(--navy-d)}
+.opt.wrong{border-color:#E06A4C;color:#E06A4C}
+.opt.dim{opacity:.35}
+.opt-key{border:1px solid currentColor;padding:1px 8px;font-size:12px;flex:none;font-family:'IBM Plex Mono'}
+#verdict{margin-top:16px;min-height:20px}
+.v-ok{color:var(--gold-b);letter-spacing:.14em;font-size:12.5px}
+.v-no{color:#E06A4C;letter-spacing:.14em;font-size:12.5px}
+.vwhy{color:var(--ddim);margin-top:8px;font-size:.95rem;line-height:1.65;max-width:62ch}
+
+.bolo{max-width:620px;margin:26px auto;background:var(--bone);color:var(--ink);padding:24px 28px;
+  border:1px solid var(--navy);box-shadow:6px 6px 0 rgba(0,0,0,.35);position:relative}
+.bolo-stamp{position:absolute;top:12px;right:16px;border:3px solid var(--red);color:var(--red);
+  font-family:'IBM Plex Mono';font-weight:600;padding:3px 12px;transform:rotate(6deg);font-size:19px;letter-spacing:.18em}
+.bolo-body p{font-family:'IBM Plex Mono';font-size:13.5px;letter-spacing:.04em;padding:7px 0;border-bottom:1px dotted #9a927e}
+.bolo-body p:first-child{font-weight:600}
+.bolo-timer{font-family:'IBM Plex Mono';font-size:11.5px;margin-top:14px;letter-spacing:.1em;color:#5a5142}
+.plate-row{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.plate-in{flex:1;min-width:220px;background:var(--navy);border:2px solid var(--dline);color:var(--gold-b);
+  font-family:'IBM Plex Mono';font-size:1.4rem;letter-spacing:.28em;padding:12px 16px;text-transform:uppercase;text-align:center}
+.plate-in:focus{outline:none;border-color:var(--gold)}
+
+.arena{max-width:560px;margin:0 auto}
+.arena-status{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ddim);letter-spacing:.1em;margin-bottom:16px;font-family:'IBM Plex Mono'}
+.rx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.rx-cell{aspect-ratio:1;border:2px solid #2C4666;display:flex;align-items:center;justify-content:center}
+.rx-cell.good{background:rgba(240,179,35,.28)}
+.rx-cell.bad{background:rgba(176,73,47,.35)}
+.stim.go{width:68%;aspect-ratio:1;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 0 5px rgba(255,201,74,.22)}
+.stim.nogo{width:68%;aspect-ratio:1;border:3px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(240,179,35,.05)}
+.stim.nogo svg{width:52%;height:52%}
+.arena .hint{text-align:center}
+
+/* flashcards */
+.fwrap{max-width:480px;margin:0 auto;text-align:center}
+.fcard{perspective:1200px;cursor:pointer;height:280px;margin-bottom:18px}
+.finner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fcard.flipped .finner{transform:rotateY(180deg)}
+.fface{position:absolute;inset:0;backface-visibility:hidden;background:#fff;color:var(--navy);
+  border:1px solid var(--navy);border-top:6px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.fface .f-tag{font-size:10px;letter-spacing:.18em;color:var(--dim);position:absolute;top:16px;left:0;right:0}
+.f-big{font-weight:800;text-transform:uppercase;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.1;letter-spacing:.02em}
+.fface .f-sub{font-size:11px;letter-spacing:.14em;color:var(--dim);position:absolute;bottom:16px;left:0;right:0}
+.fback{transform:rotateY(180deg);background:var(--navy);color:#fff;border-color:var(--gold)}
+.fback .f-tag{color:var(--gold-b)}
+.fback .f-sub{color:var(--ddim)}
+.fgrade{display:flex;gap:12px;justify-content:center;opacity:.35;pointer-events:none;transition:.2s}
+.fgrade.ready{opacity:1;pointer-events:auto}
+.fwrap .q-hint{margin-top:14px;text-align:center}
+
+.results{text-align:center}
+.score-row{display:flex;align-items:baseline;justify-content:center;gap:10px;margin:14px 0 6px}
+.big-score{font-weight:800;font-size:5.2rem;color:var(--gold-b);line-height:1}
+.max-score{font-weight:700;font-size:1.8rem;color:var(--ddim)}
+.stamp{display:inline-block;border:3px solid var(--gold);color:var(--gold);padding:4px 12px;
+  transform:rotate(-4deg);font-size:11.5px;letter-spacing:.16em;margin-left:14px;align-self:center;font-family:'IBM Plex Mono'}
+.r-lines{max-width:440px;margin:20px auto}
+.r-line{display:flex;justify-content:space-between;border-bottom:1px solid var(--dline);padding:9px 2px;font-size:12.5px;color:var(--ddim);letter-spacing:.06em;font-family:'IBM Plex Mono'}
+.r-line span:last-child{color:var(--bone)}
+.r-total{margin:20px 0 26px;font-size:12.5px;color:var(--gold-b);letter-spacing:.08em;font-family:'IBM Plex Mono'}
+.r-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+#toast{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--navy-d);color:var(--bone);border-left:4px solid var(--gold);padding:12px 18px;
+  font-family:'IBM Plex Mono';font-size:12px;letter-spacing:.06em;animation:tin .25s;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+@keyframes tin{from{transform:translateY(12px);opacity:0}}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:1000px){
+  .hero .wrap{grid-template-columns:1fr;gap:36px;padding-top:44px}
+  .study-grid{grid-template-columns:1fr;gap:36px}
+  .flashpanel{position:static}
+  #fitness .grid2,#records .grid2{grid-template-columns:1fr}
+  .mh-record{display:none}
+}
+@media(max-width:820px){
+  .drill-row{grid-template-columns:70px 1fr 48px;grid-template-areas:"num main go" "num side go";gap:6px 12px;padding:20px 10px}
+  .d-num .n{font-size:2.2rem;-webkit-text-stroke-width:1.5px}
+  .d-side{text-align:left;margin-top:4px}
+  .d-go{width:42px;height:42px}
+  .l-head{grid-template-columns:1fr auto;grid-template-areas:"num chip" "title chip" "meta caret"}
+  .l-num,.l-title,.l-meta{grid-area:unset}
+  .l-head .l-num{display:none}
+  .l-caret{grid-row:1}
+  .vgrid{grid-template-columns:1fr}
+  .duo{grid-template-columns:1fr}
+  #utility .uleft a{margin-right:10px}
+  #clock{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- SEAL DEFINITION -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="seal" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="98" fill="#0B2F55"/>
+  <circle cx="100" cy="100" r="98" fill="none" stroke="#F0B323" stroke-width="3.5"/>
+  <circle cx="100" cy="100" r="87" fill="none" stroke="#F0B323" stroke-width="1.2"/>
+  <path id="sealTop" d="M 24,100 A 76,76 0 0 1 176,100" fill="none"/>
+  <path id="sealBot" d="M 24,100 A 76,76 0 0 0 176,100" fill="none"/>
+  <text fill="#F0B323" font-size="13" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="2.2">
+    <textPath href="#sealTop" startOffset="50%" text-anchor="middle">PENNSYLVANIA STATE POLICE</textPath>
+  </text>
+  <text fill="#F0B323" font-size="11.5" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="2.6">
+    <textPath href="#sealBot" startOffset="50%" text-anchor="middle">TRAINING DIVISION · EST. 1905</textPath>
+  </text>
+  <path d="M72,68 H128 L114,124 H86 Z" fill="#F0B323"/>
+  <polygon transform="translate(100,96)" fill="#0B2F55"
+    points="0,-11 -2.6,-3.6 -10.5,-3.4 -4.3,1.4 -6.5,9.8 0,4.5 6.5,9.8 4.3,1.4 10.5,-3.4 2.6,-3.6"/>
+  <text x="100" y="143" text-anchor="middle" fill="#F0B323" font-size="9" font-family="IBM Plex Mono, monospace" letter-spacing="2">HONOR · SERVICE</text>
+</symbol>
+</defs></svg>
+
+<!-- ============ UTILITY BAR ============ -->
+<div id="utility">
+  <div class="wrap">
+    <div class="uleft">
+      <a href="https://www.psp.pa.gov" target="_blank" rel="noopener">PSP.PA.GOV ↗</a>
+      <a href="https://www.legis.state.pa.us" target="_blank" rel="noopener">PA GENERAL ASSEMBLY ↗</a>
+      <a href="https://www.youtube.com/results?search_query=Pennsylvania+State+Police+official" target="_blank" rel="noopener">OFFICIAL VIDEO CHANNEL ↗</a>
+    </div>
+    <div class="uright">
+      <span id="clock" class="mono">00:00:00</span>
+      <button id="muteBtn" aria-label="Toggle sound">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" stroke="none"/>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+          <path class="slash" d="M3 3 L21 21" stroke="#E06A4C" stroke-width="2.4"/>
+        </svg>
+      </button>
+      <span class="u911 mono">EMERGENCY: 911</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MASTHEAD ============ -->
+<header id="masthead">
+  <div class="wrap">
+    <svg class="seal" aria-hidden="true"><use href="#seal"/></svg>
+    <div class="mh-title">
+      <p class="commonwealth">COMMONWEALTH OF PENNSYLVANIA · TRAINING DIRECTIVE 25-01</p>
+      <h1>Pennsylvania State Police</h1>
+      <p class="sub">TRAINING DIVISION — RECRUIT STUDY SYSTEM (INDEPENDENT)</p>
+    </div>
+    <div class="mh-record">
+      <p class="r-label">RECRUIT RECORD — FORM TR-1</p>
+      <div class="r-row"><span>RANK</span><strong data-rank>TRAINEE</strong></div>
+      <div class="r-row"><span>POINTS</span><strong data-pts>0</strong></div>
+      <div class="pbar"><div id="pbarFill"></div></div>
+      <p class="rp-note" data-next style="margin-top:8px">150 PTS TO CANDIDATE</p>
+    </div>
+  </div>
+</header>
+
+<!-- ============ NAV ============ -->
+<nav id="mainnav">
+  <div class="wrap">
+    <a href="#exams" data-nav="exams">Examinations</a>
+    <a href="#lessons" data-nav="lessons">Lessons</a>
+    <a href="#study" data-nav="study">Study Hall</a>
+    <a href="#fitness" data-nav="fitness">Physical Readiness</a>
+    <a href="#records" data-nav="records">Records</a>
+    <span class="navscore mono"><span id="navChip" data-pts>0 PTS</span></span>
+  </div>
+</nav>
+
+<!-- ============ NOTICE ============ -->
+<div class="notice">
+  <div class="wrap"><strong>NOTICE —</strong>
+    <span>This is an independent study aid, not an official Commonwealth website. Requirements, standards, and laws change — verify everything at <a href="https://www.psp.pa.gov" target="_blank" rel="noopener">psp.pa.gov</a> with an official recruiter before you apply.</span>
+  </div>
+</div>
+
+<!-- ============ TICKER ============ -->
+<div class="ticker"><div class="ticker-inner mono" id="tickerInner"></div></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <svg class="hero-watermark" aria-hidden="true"><use href="#seal"/></svg>
+  <div class="wrap">
+    <div>
+      <p class="crumbs">You are here: <b>Training Division</b> &gt; Recruit Study System &gt; Home</p>
+      <p class="kicker mono">MODELED ON THE PSP SELECTION PROCESS — OBSERVATION · JUDGMENT · MATHEMATICS · LAW</p>
+      <h2>Train the mind.<br>Earn the <em>gold and blue.</em></h2>
+      <p class="lede">The Pennsylvania State Police, established 1905, is the first — and regarded as among the finest — uniformed state police forces in the nation. This study system is built on the skills their selection process actually examines. Complete the lessons. Run the examinations. Record your scores. Promotion is earned here, the way it is earned at the Academy in Hershey.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold" href="#exams">Open examination range</a>
+        <button class="btn btn-ghost" id="ctaLesson">Begin with Lesson 101</button>
+        <span class="mono">PROGRESS IS STORED ON THIS DEVICE ONLY</span>
+      </div>
+    </div>
+    <div class="recpanel">
+      <div class="rp-head">RECRUIT RECORD — FORM TR-1</div>
+      <div class="rp-body">
+        <label for="nameInput">RECRUIT SURNAME — ENTER YOUR NAME</label>
+        <input id="nameInput" maxlength="18" autocomplete="off" spellcheck="false" placeholder="RECRUIT">
+        <div class="rstat"><span>CURRENT RANK</span><strong data-rank>TRAINEE</strong></div>
+        <div class="rstat"><span>POINTS ON RECORD</span><strong data-pts>0</strong></div>
+        <div class="pbar"><div id="pbarFill2"></div></div>
+        <p class="rp-note" data-next>150 PTS TO CANDIDATE</p>
+        <p class="rp-lessons" data-lessons>LESSONS COMPLETE — 0 / 6</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+<!-- ============ EXAMINATION RANGE ============ -->
+<section id="exams">
+  <div class="wrap">
+    <div class="shead">
+      <div><p class="kick">PART 01 · SKILL EXAMINATIONS</p><h2>Examination Range</h2></div>
+      <span class="part mono">5 EXAMS · 930 PTS MAX</span>
+    </div>
+    <p class="exam-intro">Each examination is timed and scored the way the Academy tests: under pressure, against the clock, with your personal best kept on permanent record. Read every explanation the exam gives you after each answer — the reasoning is the training.</p>
+    <ol id="syllabus"></ol>
+    <p class="syll-note">REPETITION IS THE ACADEMY'S OLDEST TEACHING TOOL. RUN THE EXAMS UNTIL THE ANSWERS ARE REFLEXES — THEN RUN THEM AGAIN.</p>
+  </div>
+</section>
+
+<!-- ============ LESSONS ============ -->
+<section id="lessons">
+  <div class="wrap">
+    <div class="shead">
+      <div><p class="kick">PART 02 · INSTRUCTION</p><h2>Lessons</h2></div>
+      <span class="part mono">6 LESSONS · 150 PTS</span>
+    </div>
+    <p class="exam-intro">Read each lesson, then drill the skill it teaches. Mark a lesson complete to bank 25 points. This curriculum covers the knowledge blocks the PSP selection process and academy consistently test — written in plain language, with the sources to verify.</p>
+    <div id="lessonList"></div>
+  </div>
+</section>
+
+<!-- ============ STUDY HALL ============ -->
+<section id="study" class="dark">
+  <div class="wrap">
+    <div class="shead">
+      <div><p class="kick">PART 03 · STUDY HALL</p><h2>Flashcards &amp; Video Range</h2></div>
+      <span class="part mono">DAILY STUDY BLOCK</span>
+    </div>
+    <div class="study-grid">
+      <div class="flashpanel">
+        <h3>FLASHCARD RANGE — TEN-CODES</h3>
+        <p class="flash-fc">DECK: <b>13 CARDS</b> · KNEW-IT = +5 PTS · SELF-GRADED</p>
+        <p>A card appears — a code or a meaning. Flip it, grade yourself honestly, and run the full deck. Spaced repetition is the fastest proven way to burn radio codes into permanent memory. Officers who know their codes cold sound professional on the air from day one.</p>
+        <button class="btn btn-gold" id="openFlash">Open flashcard range</button>
+        <h3 style="margin-top:26px">DAILY 15 — THE STUDY PLAN</h3>
+        <ul class="plan">
+          <li><span class="t">5 MIN</span><span>Flashcard range — full deck, honest grading (Lesson 106, spaced repetition)</span></li>
+          <li><span class="t">5 MIN</span><span>One examination — rotate: BOLO Monday, Written Tuesday, Judgment Wednesday…</span></li>
+          <li><span class="t">5 MIN</span><span>Re-read one lesson's KEY POINTS box from memory first, then check yourself</span></li>
+        </ul>
+        <div class="official-links">
+          <a class="btn btn-ghost lt btn-sm" href="https://www.psp.pa.gov" target="_blank" rel="noopener">psp.pa.gov ↗</a>
+          <a class="btn btn-ghost lt btn-sm" href="https://www.legis.state.pa.us/cfdocs/legis/LI/consCheck.cfm?txtType=HTM&ttl=75" target="_blank" rel="noopener">PA Vehicle Code (Title 75) ↗</a>
+        </div>
+      </div>
+      <div class="vgrid" id="videoGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FITNESS ============ -->
+<section id="fitness">
+  <div class="wrap">
+    <div class="shead">
+      <div><p class="kick">PART 04 · PHYSICAL READINESS</p><h2>Physical Readiness</h2></div>
+      <span class="part mono">START YEARS EARLY</span>
+    </div>
+    <div class="grid2">
+      <div>
+        <table class="stable">
+          <caption>COMMONLY CITED ENTRY STANDARDS — VERIFY CURRENT NUMBERS WITH A RECRUITER</caption>
+          <thead><tr><th>EVENT</th><th>STANDARD</th></tr></thead>
+          <tbody>
+            <tr><td>Vertical jump</td><td>16 in</td></tr>
+            <tr><td>300-meter run</td><td>71 sec</td></tr>
+            <tr><td>Push-ups</td><td>21 reps</td></tr>
+            <tr><td>Sit-ups (1 min)</td><td>36 reps</td></tr>
+            <tr><td>1.5-mile run</td><td>15:14</td></tr>
+          </tbody>
+        </table>
+        <p class="fine">These are minimums, not targets. Cadets who arrive already above the standard spend their energy learning instead of surviving. The checklist at right is your daily PT card — it resets every morning.</p>
+      </div>
+      <div class="habits">
+        <div class="rp-head">TODAY'S PT &amp; STUDY CARD</div>
+        <div class="rp-body">
+          <div id="habitCount">TODAY — 0/5 COMPLETE</div>
+          <ul id="habitList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECORDS ============ -->
+<section id="records">
+  <div class="wrap">
+    <div class="shead">
+      <div><p class="kick">PART 05 · CENTRAL RECORDS</p><h2>Records &amp; Promotion</h2></div>
+      <span class="part mono">OFFICIAL RANK STRUCTURE</span>
+    </div>
+    <div class="grid2">
+      <table class="rtable" id="rankTable">
+        <caption style="caption-side:top;text-align:left;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;color:var(--navy);padding-bottom:10px;font-weight:600">PROMOTION SCHEDULE — REAL PSP RANK LADDER</caption>
+        <thead><tr><th>RANK</th><th>POINTS REQUIRED</th><th>STATUS</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <table class="rtable" id="pbTable">
+        <caption style="caption-side:top;text-align:left;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.16em;color:var(--navy);padding-bottom:10px;font-weight:600">PERSONAL RECORDS — EXAMINATION BESTS</caption>
+        <thead><tr><th>EXAMINATION</th><th>PERSONAL BEST</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <svg class="seal" style="width:76px;height:76px" aria-hidden="true"><use href="#seal"/></svg>
+  <p class="shout">Do the work. <em>The badge follows.</em></p>
+  <p class="values">HONOR · SERVICE · INTEGRITY · RESPECT</p>
+  <p class="flinks mono">
+    <a href="https://www.psp.pa.gov" target="_blank" rel="noopener">PSP.PA.GOV</a>|
+    <a href="https://www.legis.state.pa.us" target="_blank" rel="noopener">PA CONSOLIDATED STATUTES</a>|
+    <a href="https://www.youtube.com/results?search_query=Pennsylvania+State+Police+official" target="_blank" rel="noopener">OFFICIAL VIDEO CHANNEL</a>
+  </p>
+  <p class="fine">INDEPENDENT STUDY AID FOR PERSONAL TRAINING. NOT AFFILIATED WITH, ENDORSED BY, OR AN OFFICIAL WEBSITE OF THE PENNSYLVANIA STATE POLICE OR THE COMMONWEALTH OF PENNSYLVANIA.<br>
+  FITNESS STANDARDS, RADIO CODES, STATUTES, AND HIRING REQUIREMENTS CHANGE. VERIFY ALL OF IT WITH AN OFFICIAL PSP RECRUITER BEFORE APPLYING.</p>
+</footer>
+
+<!-- ============ DRILL OVERLAY ============ -->
+<div id="overlay" hidden>
+  <div class="ov-head">
+    <span id="ovName">—</span>
+    <div class="ov-meta">
+      <span id="ovProgress" class="mono"></span>
+      <button id="ovExit" class="btn btn-ghost lt btn-sm">Close [ESC]</button>
+    </div>
+  </div>
+  <div id="ovBody"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================================================================
+   PSP RECRUIT STUDY SYSTEM — all logic local, progress in localStorage
+================================================================ */
+const $=s=>document.querySelector(s);
+const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=r(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pad=n=>String(n).padStart(2,'0');
+const round1=v=>Math.round(v*10)/10;
+
+/* ---------- state (migrates from v1) ---------- */
+const KEY='pspTrainerV2';
+function load(){
+  try{
+    const v2=JSON.parse(localStorage.getItem(KEY));
+    if(v2)return v2;
+    const v1=JSON.parse(localStorage.getItem('pspTrainerV1'));
+    if(v1)return{...v1,lessons:{}};
+  }catch(e){}
+  return null;
+}
+let state=load()||{name:'',pts:0,pb:{},lessons:{},muted:false,habits:{date:'',chk:[false,false,false,false,false]}};
+if(!state.pb)state.pb={};
+if(!state.lessons)state.lessons={};
+if(!state.habits)state.habits={date:'',chk:[false,false,false,false,false]};
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+
+/* ---------- ranks (real PSP structure) ---------- */
+const RANKS=[[0,'TRAINEE'],[150,'CANDIDATE'],[400,'CADET'],[800,'TROOPER'],[1400,'CORPORAL'],
+  [2200,'SERGEANT'],[3200,'LIEUTENANT'],[4500,'CAPTAIN'],[6000,'MAJOR'],[8000,'LT. COLONEL'],[10000,'COLONEL — COMMISSIONER']];
+const rankIdx=p=>{let i=0;RANKS.forEach((x,k)=>{if(p>=x[0])i=k;});return i;};
+const lessonCount=()=>Object.keys(state.lessons).filter(k=>state.lessons[k]).length;
+
+function renderRank(){
+  const p=state.pts,i=rankIdx(p),cur=RANKS[i],next=RANKS[i+1];
+  document.querySelectorAll('[data-rank]').forEach(el=>el.textContent=cur[1]);
+  document.querySelectorAll('[data-pts]').forEach(el=>el.textContent=p+(el.id==='navChip'?' PTS':''));
+  document.querySelectorAll('[data-lessons]').forEach(el=>el.textContent='LESSONS COMPLETE — '+lessonCount()+' / 6');
+  const set=(id,pct,txt)=>{const bar=$(id);if(bar)bar.style.width=pct+'%';const n=$(id+'t');if(n)n.textContent=txt;};
+  document.querySelectorAll('[data-next]').forEach(el=>{
+    el.textContent=next?(next[0]-p)+' PTS TO '+next[1]:'TOP RANK ACHIEVED — RUN THE COMMONWEALTH';
+  });
+  ['#pbarFill','#pbarFill2'].forEach(id=>{
+    const bar=$(id);
+    if(bar)bar.style.width=next?Math.min(100,(p-cur[0])/(next[0]-cur[0])*100)+'%':'100%';
+  });
+}
+function renderScore(){
+  const c=$('#navChip');
+  c.classList.remove('pulse');void c.offsetWidth;c.classList.add('pulse');
+  setTimeout(()=>c.classList.remove('pulse'),250);
+  renderRank();
+}
+
+/* ---------- sound (tiny synth) ---------- */
+const S=(()=>{
+  let ctx;
+  const ac=()=>ctx||(ctx=new (window.AudioContext||window.webkitAudioContext)());
+  function t(f,d,type,g,dt){
+    if(state.muted)return;
+    try{
+      const c=ac(),o=c.createOscillator(),gn=c.createGain();
+      o.type=type||'sine';o.frequency.value=f;
+      o.connect(gn);gn.connect(c.destination);
+      const st=c.currentTime+(dt||0);
+      gn.gain.setValueAtTime(g||.06,st);
+      gn.gain.exponentialRampToValueAtTime(.0001,st+d);
+      o.start(st);o.stop(st+d+.03);
+    }catch(e){}
+  }
+  return{
+    correct(){t(740,.08,'sine',.07);t(1108,.12,'sine',.07,.08);},
+    wrong(){t(170,.2,'square',.045);},
+    tick(){t(1400,.03,'square',.03);},
+    blip(){t(980,.05,'sine',.045);},
+    fanfare(){[523,659,784,1046].forEach((f,i)=>t(f,.16,'sine',.055,i*.11));}
+  };
+})();
+ $('#muteBtn').onclick=()=>{
+  state.muted=!state.muted;save();
+  $('#muteBtn').classList.toggle('muted',state.muted);
+  toast(state.muted?'SOUND OFF':'SOUND ON');
+};
+ $('#muteBtn').classList.toggle('muted',state.muted);
+
+/* ---------- toast ---------- */
+function toast(msg){
+  const d=document.createElement('div');d.className='toast';d.textContent=msg;
+  $('#toast').appendChild(d);setTimeout(()=>d.remove(),3200);
+}
+
+/* ---------- clock ---------- */
+function tickClock(){const d=new Date();$('#clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());}
+tickClock();setInterval(tickClock,1000);
+
+/* ---------- name ---------- */
+const nameInput=$('#nameInput');
+nameInput.value=state.name;
+nameInput.addEventListener('input',()=>{state.name=nameInput.value.toUpperCase().slice(0,18);save();});
+const callName=()=>state.name||'RECRUIT';
+
+/* ---------- ticker ---------- */
+(()=>{
+  const items=[
+    'SCHOOL BUS RED LIGHTS — STOP 10 FEET, BOTH DIRECTIONS',
+    'ACTIVE WORK ZONES — FINES DOUBLED',
+    'STEER CLEAR — MOVE OVER OR SLOW 20 MPH BELOW THE LIMIT',
+    'PAUL MILLER\u2019S LAW — NO HANDHELD PHONE WHILE DRIVING',
+    'UNDER 21 — ZERO TOLERANCE AT 0.02% BAC',
+    'SIGNAL 100 FEET BEFORE EVERY TURN',
+    'HONOR · SERVICE · INTEGRITY · RESPECT'
+  ];
+  const txt=items.join('   ///   ')+'   ///   ';
+  $('#tickerInner').innerHTML=`<span>${txt}</span><span>${txt}</span>`;
+})();
+
+ $('#ctaLesson').onclick=()=>{
+  const first=document.querySelector('.lesson');
+  if(first&&!first.classList.contains('open'))first.classList.add('open');
+  $('#lessons').scrollIntoView({behavior:'smooth'});
+};
+
+/* ---------- nav active state ---------- */
+const navSections=['exams','lessons','study','fitness','records'];
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('#mainnav a').forEach(a=>a.classList.toggle('active',a.dataset.nav===e.target.id));
+    }
+  });
+},{rootMargin:'-35% 0px -55% 0px'});
+navSections.forEach(id=>{const el=document.getElementById(id);if(el)io.observe(el);});
+
+/* ---------- timer bar helper ---------- */
+let barCtl=null;
+function runBar(sec,onEnd,onTick){
+  stopBar();
+  const el=$('#qbar');if(!el){onEnd();return;}
+  const t0=performance.now();let raf,done=false;
+  function step(t){
+    if(done)return;
+    const left=Math.max(0,sec-(t-t0)/1000);
+    el.style.width=(left/sec*100)+'%';
+    if(onTick)onTick(left);
+    if(left<=0){done=true;barCtl=null;onEnd();return;}
+    raf=requestAnimationFrame(step);
+  }
+  raf=requestAnimationFrame(step);
+  barCtl=()=>{done=true;cancelAnimationFrame(raf);};
+}
+function stopBar(){if(barCtl){barCtl();barCtl=null;}}
+
+let dTid=null;
+const dT=(fn,ms)=>{clearTimeout(dTid);dTid=setTimeout(fn,ms);};
+
+/* ---------- MC helpers ---------- */
+function shuffleOpts(correct,wrongs){
+  const arr=shuffle([correct,...wrongs.slice(0,3)]);
+  return{opts:arr,a:arr.indexOf(correct)};
+}
+function mcBody(q){
+  return `<div class="qblock">
+    <p class="qprompt">${q.q}</p>
+    ${q.hint?`<p class="q-hint mono">${q.hint}</p>`:''}
+    <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="opt-key">${'ABCD'[i]}</span>${o}</button>`).join('')}</div>
+    <div id="verdict"></div></div>`;
+}
+function bindMC(q,onAnswer){
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.onclick=()=>{
+      const i=+btn.dataset.i,ok=i===q.a;
+      document.querySelectorAll('.opt').forEach(b=>{
+        b.disabled=true;const bi=+b.dataset.i;
+        if(bi===q.a)b.classList.add('correct');
+        else if(bi===i)b.classList.add('wrong');
+        else b.classList.add('dim');
+      });
+      ok?S.correct():S.wrong();
+      $('#verdict').innerHTML=`<p class="mono ${ok?'v-ok':'v-no'}">${ok?'CORRECT':'WRONG'}</p>${q.why?`<p class="vwhy">${q.why}</p>`:''}`;
+      onAnswer(ok);
+    };
+  });
+}
+function revealTimeout(q){
+  document.querySelectorAll('.opt').forEach(b=>{
+    b.disabled=true;
+    if(+b.dataset.i===q.a)b.classList.add('correct');else b.classList.add('dim');
+  });
+  $('#verdict').innerHTML=`<p class="mono v-no">TIME EXPIRED</p>${q.why?`<p class="vwhy">${q.why}</p>`:''}`;
+  S.wrong();
+}
+
+/* ---------- overlay plumbing ---------- */
+const overlay=$('#overlay'),ovBody=$('#ovBody');
+let current=null;
+function ovMeta(label,status){$('#ovName').textContent=label;$('#ovProgress').textContent=status;}
+function phase(html){ovBody.innerHTML=html;ovBody.scrollTop=0;overlay.scrollTop=0;}
+function openDrill(id){
+  current=id;S.blip();
+  overlay.hidden=false;document.body.style.overflow='hidden';
+  MODULES[id].start();
+}
+function closeDrill(){
+  stopBar();clearTimeout(dTid);
+  if(RX.clear)RX.clear();
+  overlay.hidden=true;document.body.style.overflow='';
+  current=null;
+  renderRank();renderSyllabus();renderRecords();
+}
+ $('#ovExit').onclick=closeDrill;
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!overlay.hidden)closeDrill();
+  if(overlay.hidden)return;
+  if(current==='reflex'&&e.code==='Space'){e.preventDefault();RX.respond();}
+  if(current==='flash'){
+    if(e.code==='Space'){e.preventDefault();FLASH.flip();}
+    if(e.key==='1')FLASH.grade(true);
+    if(e.key==='2')FLASH.grade(false);
+  }
+});
+
+/* ---------- scoring ---------- */
+function grant(n){
+  const before=rankIdx(state.pts);
+  state.pts+=n;
+  const after=rankIdx(state.pts);
+  save();renderScore();
+  if(after>before){toast('PROMOTION — '+RANKS[after][1]);}
+}
+function completeDrill(id,score){
+  let newPB=false;
+  if(score>(state.pb[id]||0)){state.pb[id]=score;newPB=true;}
+  grant(score);
+  return newPB;
+}
+function totalNote(){
+  const p=state.pts,i=rankIdx(p),next=RANKS[i+1];
+  return next?`TOTAL ${p} PTS · ${next[0]-p} TO ${next[1]}`:`TOTAL ${p} PTS · TOP RANK`;
+}
+function showResults(o){
+  const newPB=completeDrill(o.id,o.score);
+  ovMeta(o.num+' · '+o.name,'COMPLETE');
+  phase(`<div class="results">
+    <p class="mono" style="color:var(--gold-b);font-size:11.5px;letter-spacing:.2em">EXAMINATION COMPLETE — RECORDED</p>
+    <div class="score-row">
+      <span class="big-score cond">${o.score}</span><span class="max-score cond">/ ${o.max}</span>
+      ${newPB?'<span class="stamp">NEW PERSONAL BEST</span>':''}
+    </div>
+    <div class="r-lines">${o.lines.map(l=>`<div class="r-line"><span>${l[0]}</span><span>${l[1]}</span></div>`).join('')}</div>
+    <p class="r-total">+${o.score} PTS BANKED · ${totalNote()}</p>
+    <div class="r-btns">
+      <button class="btn btn-gold" id="rAgain">Run it again</button>
+      <button class="btn btn-ghost lt" id="rBack">Return to schedule</button>
+    </div></div>`);
+  S.fanfare();
+  $('#rAgain').onclick=()=>MODULES[o.id].start();
+  $('#rBack').onclick=closeDrill;
+}
+
+/* ================================================================
+   EXAM 100 — BOLO RECALL
+================================================================ */
+const OBS={
+  colors:['BLACK','WHITE','SILVER','RED','BLUE','GRAY','GREEN'],
+  makes:['FORD F-150','HONDA CIVIC','CHEVROLET MALIBU','TOYOTA CAMRY','DODGE CHARGER','JEEP GRAND CHEROKEE','GMC SIERRA'],
+  dirs:['NORTHBOUND','SOUTHBOUND','EASTBOUND','WESTBOUND'],
+  jackets:['BLACK','GRAY','GREEN','BROWN','TAN','BLUE','BURGUNDY'],
+  start(){
+    this.score=0;this.round=0;this.cat=[0,0,0,0];
+    ovMeta('EXAM 100 · BOLO RECALL','BRIEFING');
+    phase(`<div class="brief">
+      <p class="tag">EXAMINATION 100 — OBSERVATION &amp; MEMORY</p>
+      <h2>Bolo Recall</h2>
+      <p>A Be-On-the-Lookout bulletin will appear on your screen for a few seconds — a plate, a vehicle, a direction of travel, a person. Then the transmission ends.</p>
+      <p>Report exactly what you saw. Five rounds, four details per round, ten points each. The flash gets shorter every round: 8, 7, 6, 5, 4 seconds.</p>
+      <p class="dim">MAX 200 PTS · SEE LESSON 101 FOR THE TECHNIQUES THIS EXAM TESTS</p>
+      <button class="btn btn-gold" id="dgo">Begin examination</button></div>`);
+    $('#dgo').onclick=()=>this.beginRound();
+  },
+  genSuspect(){
+    const L='ABCDEFGHJKLMNPRSTUVWXYZ';
+    let p='';for(let i=0;i<3;i++)p+=L[r(0,L.length-1)];
+    this.sus={plate:p+'-'+r(1000,9999),color:pick(this.colors),make:pick(this.makes),
+      dir:pick(this.dirs),jacket:pick(this.jackets),
+      who:pick(['MALE','FEMALE'])+' '+pick(['20s','30s','40s','50s'])};
+  },
+  beginRound(){
+    this.round++;this.genSuspect();
+    const T=[8,7,6,5,4][this.round-1],s=this.sus;
+    ovMeta('EXAM 100 · BOLO RECALL','ROUND '+this.round+' / 5 — MEMORIZE');
+    phase(`<div class="bolo">
+      <div class="bolo-stamp">BOLO</div>
+      <div class="bolo-body">
+        <p>ALL UNITS — BE ON THE LOOKOUT</p>
+        <p>VEHICLE .... ${s.color} ${s.make}</p>
+        <p>PLATE ...... ${s.plate} (PA)</p>
+        <p>DIRECTION .. ${s.dir} ON RT 15</p>
+        <p>OCCUPANT ... ${s.who}, ${s.jacket} JACKET</p>
+      </div>
+      <div class="bolo-timer">TRANSMISSION ENDS IN <span id="btSec">${T}</span> SECONDS</div>
+    </div>
+    <div class="qtimer"><div id="qbar"></div></div>`);
+    let last=T;
+    runBar(T,()=>this.askQ(0),left=>{
+      const c=Math.ceil(left);
+      if(c!==last){last=c;S.tick();}
+      const el=$('#btSec');if(el)el.textContent=c;
+    });
+  },
+  askQ(i){
+    const s=this.sus;
+    if(i===0){
+      ovMeta('EXAM 100 · BOLO RECALL',`ROUND ${this.round} — REPORT THE PLATE`);
+      phase(`<div class="qwrap">
+        <p class="qprompt">Report the plate</p>
+        <p class="q-hint mono">3 LETTERS + 4 DIGITS · DASH OPTIONAL · EXACT MATCH</p>
+        <div class="plate-row">
+          <input id="plateIn" class="plate-in" maxlength="8" autocomplete="off" spellcheck="false" placeholder="ABC-1234">
+          <button class="btn btn-gold" id="plateGo">Report</button>
+        </div><div id="verdict"></div></div>`);
+      const inp=$('#plateIn');inp.focus();
+      const submit=()=>{
+        const v=inp.value.replace(/[^A-Z0-9]/gi,'').toUpperCase();
+        const ok=v===s.plate.replace('-','');
+        if(ok){this.score+=10;this.cat[0]++;S.correct();}else S.wrong();
+        inp.disabled=true;$('#plateGo').disabled=true;
+        $('#verdict').innerHTML=`<p class="mono ${ok?'v-ok':'v-no'}">${ok?'CORRECT':'WRONG'}</p><p class="vwhy">The plate was ${s.plate}.</p>`;
+        dT(()=>this.askQ(1),1600);
+      };
+      $('#plateGo').onclick=submit;
+      inp.onkeydown=e=>{if(e.key==='Enter')submit();};
+      return;
+    }
+    const defs=[
+      null,
+      {q:'Vehicle color?',correct:s.color,pool:this.colors,why:`The vehicle was a ${s.color} ${s.make}.`},
+      {q:'Direction of travel?',correct:s.dir,pool:this.dirs,why:`Last seen ${s.dir} on Route 15.`},
+      {q:'Jacket color of the occupant?',correct:s.jacket,pool:this.jackets,why:`The occupant wore a ${s.jacket} jacket. (${s.who})`},
+    ];
+    const d=defs[i];
+    const {opts,a}=shuffleOpts(d.correct,d.pool.filter(c=>c!==d.correct));
+    const q={q:d.q,opts,a,why:d.why};
+    ovMeta('EXAM 100 · BOLO RECALL',`ROUND ${this.round} — DETAIL ${i} / 3`);
+    phase(`<div class="qwrap">${mcBody(q)}</div>`);
+    bindMC(q,ok=>{
+      if(ok){this.score+=10;this.cat[i-1]++;}
+      dT(()=>i<3?this.askQ(i+1):(this.round<5?this.beginRound():this.finish()),1500);
+    });
+  },
+  finish(){
+    showResults({id:'obs',num:'EXAM 100',name:'BOLO RECALL',score:this.score,max:200,lines:[
+      ['PLATES REPORTED',this.cat[0]+' / 5'],
+      ['VEHICLE COLOR',this.cat[1]+' / 5'],
+      ['DIRECTION',this.cat[2]+' / 5'],
+      ['OCCUPANT',this.cat[3]+' / 5'],
+    ]});
+  }
+};
+
+/* ================================================================
+   EXAM 200 — FIELD JUDGMENT
+================================================================ */
+const SJ=[
+  {s:'During a traffic stop for a broken tail light, the driver becomes loud and insulting, cursing at you in front of passing traffic. He refuses to calm down but poses no physical threat.',
+   c:'Stay calm and professional, speak in a steady voice, and keep dispatch advised of your location and status.',
+   w:['Raise your voice back so he knows who is in charge.','Arrest him immediately for disorderly conduct.','Return to your car and drive away without finishing the stop.'],
+   why:'Composure is a trooper\u2019s armor. Matching anger escalates a minor stop into a fight; arbitrary arrest is a liability; abandoning a stop is unsafe and unprofessional. Control yourself first — that is how you control the scene.'},
+  {s:'A pursuit reaches 90 mph as it approaches an elementary school five minutes before dismissal. The suspect is wanted for a stolen vehicle — a crime with no violence.',
+   c:'Terminate or slow the pursuit, broadcast the plate and direction, and let units ahead or aviation pick up the track.',
+   w:['Keep driving fast — you cannot let a stolen car go.','Attempt a PIT maneuver right in front of the school.','Ram the vehicle to end it quickly.'],
+   why:'Pursuit policy weighs the seriousness of the crime against the danger to the public. A stolen car is property; a school zone full of children is life safety. Back off, track smart, and win the slower way.'},
+  {s:'You watch your Field Training Officer — a respected 15-year veteran — pocket a small amount of cash while processing a prisoner\u2019s property, and he sees that you saw.',
+   c:'Report what you saw, truthfully and through the chain of command.',
+   w:['Say nothing — he is your training officer and it is only a few dollars.','Tell him loudly, in front of the squad, to put it back.','Post about it anonymously on social media.'],
+   why:'Integrity is the one non-negotiable of state police service. Silence makes you complicit; public confrontation and anonymous leaks are improper. Honest reporting through the chain of command is the hard right over the easy wrong.'},
+  {s:'You respond to a domestic dispute. Both parties are yelling over each other. One has a red mark on their face. Neighbors are watching from the porch.',
+   c:'Separate the parties, call for medical help if needed, interview each one privately, document everything, and act on the evidence.',
+   w:['Tell everyone to calm down, get along, and call back if it happens again.','Arrest whoever is shouting the loudest.','Wait in your patrol car until they burn out on their own.'],
+   why:'Domestic calls are among the most dangerous a trooper makes. Separate, assess injuries, interview one-on-one, and let the evidence — not volume — decide the outcome. "Work it out" is how those calls turn fatal.'},
+  {s:'A minor fender-bender stops in the left lane of an interstate with traffic blowing past at 70 mph.',
+   c:'Position your patrol car angled behind the vehicles as a shield with lights on, move people behind the barrier, and work the scene protected.',
+   w:['Stand between the wrecked cars and direct traffic yourself.','Leave the vehicles and people in the lane while you write the report.','Tell everyone to sort it out and drive on.'],
+   why:'Secondary strikes injure more officers than gunfire. Scene safety starts with a shield vehicle, warning lights, and moving people out of harm\u2019s way — every time, in that order.'},
+  {s:'A key witness gives you an important detail, then asks you to keep it "off the record."',
+   c:'Explain that you are required to document information accurately and completely, and include it in your report.',
+   w:['Promise to omit it — you gave your word.','Put it in the report but hide it in vague wording.','Tell another trooper verbally and leave it out of the report.'],
+   why:'Reports are sworn documents that cases are built on. Omissions, vague wording, and side-channel storytelling all break the chain of truth. The honest answer is to explain your duty — most witnesses accept it.'},
+  {s:'You stop a driver for expired registration. She is a nurse, twenty minutes late for her hospital shift, apologetic, with a valid license and no prior issues.',
+   c:'Handle it with professional courtesy — a warning and clear directions on renewing, and let her go on her way quickly if policy allows.',
+   w:['Arrest her to set an example.','Impound the vehicle on the spot.','Ignore the violation and drive off without telling her anything.'],
+   why:'Troopers are entrusted with discretion. Enforcement should be consistent, but courtesy and efficiency cost nothing and buy public trust. Explain the violation, resolve it lawfully, clear the way.'},
+  {s:'At a peaceful demonstration, one person in a crowd of two hundred throws a bottle at the police line.',
+   c:'Focus on the individual\u2019s conduct — locate and address that person, notify your supervisor, and hold a professional posture with the rest of the crowd.',
+   w:['Order the entire crowd to disperse because of one actor.','Detain whoever is standing closest to you.','Withdraw the line completely and leave.'],
+   why:'The First Amendment protects the assembly; the law does not protect assault. Discipline means targeting the individual conduct, not punishing two hundred people for one bottle. Always keep the supervisor informed.'},
+  {s:'You are halfway through writing a citation on the shoulder of I-83 when dispatch broadcasts an armed robbery in progress two miles away.',
+   c:'Advise dispatch of your status, quickly and safely finish or secure the stop — return documents, clear the shoulder — then respond.',
+   w:['Finish the citation at your own pace; someone else will take it.','Leave the driver standing on the shoulder and speed off without a word.','Radio dispatch asking to be excused from emergency calls.'],
+   why:'Priorities get sequenced, not panicked. The stopped driver\u2019s safety still matters — a rushed, unsafe abandonment creates a second emergency. Communicate, secure your scene, then go.'},
+  {s:'A TV reporter approaches you at an active crime scene and asks what happened.',
+   c:'Be courteous and refer them to the supervisor or public information officer for official, confirmed information.',
+   w:['Share your personal theory of the case on camera.','Shove the camera away and walk off.','Read them the entire incident report.'],
+   why:'The public has a right to information — through the proper channel. Speculating on camera can taint a case; rudeness breeds distrust; reports are not released at the tape. Courteous referral is the professional move.'},
+];
+const SJD={
+  qi:0,score:0,
+  start(){
+    this.qi=0;this.score=0;
+    ovMeta('EXAM 200 · FIELD JUDGMENT','BRIEFING');
+    phase(`<div class="brief">
+      <p class="tag">EXAMINATION 200 — SITUATIONAL JUDGMENT</p>
+      <h2>Field Judgment</h2>
+      <p>Ten scenarios from the street. For each one, pick the course of action a trooper is actually trained to take — then read why. The reasoning is the training.</p>
+      <p class="dim">20 PTS PER CORRECT CALL · MAX 200 PTS · SEE LESSON 105</p>
+      <button class="btn btn-gold" id="dgo">Begin examination</button></div>`);
+    $('#dgo').onclick=()=>this.next();
+  },
+  next(){
+    if(this.qi>=SJ.length)return this.finish();
+    const d=SJ[this.qi],{opts,a}=shuffleOpts(d.c,d.w);
+    const q={q:d.s,opts,a,why:d.why};
+    ovMeta('EXAM 200 · FIELD JUDGMENT','SCENARIO '+(this.qi+1)+' / '+SJ.length);
+    phase(`<div class="qwrap">${mcBody(q)}</div>`);
+    bindMC(q,ok=>{
+      if(ok)this.score+=20;
+      dT(()=>{this.qi++;this.next();},ok?1800:3600);
+    });
+  },
+  finish(){
+    showResults({id:'sj',num:'EXAM 200',name:'FIELD JUDGMENT',score:this.score,max:200,lines:[
+      ['CORRECT CALLS',this.score/20+' / '+SJ.length],
+      ['REMEMBER','LIFE SAFETY · PROCEDURE · INTEGRITY'],
+    ]});
+  }
+};
+
+/* ================================================================
+   EXAM 300 — WRITTEN BOARD
+================================================================ */
+function pickWrongs(ans,cands){
+  const out=[];
+  for(const c of shuffle(cands)){
+    if(c!==ans&&c>0&&!out.includes(c))out.push(c);
+    if(out.length===3)break;
+  }
+  let k=1;
+  while(out.length<3){const c=ans+k*3+1;if(!out.includes(c))out.push(c);k++;}
+  return out;
+}
+const builders={
+  speed(){
+    const mph=pick([30,35,40,45,50,55,60,65,70]);
+    const min=pick([12,15,20,24,30,36,40,45,48,60]);
+    const dist=round1(mph*min/60);
+    return{q:`A suspect vehicle covers ${dist} miles in ${min} minutes. What is its average speed, in mph?`,
+      correct:String(mph),wrongs:pickWrongs(mph,[mph-5,mph+5,mph-10,mph+10]).map(String),
+      why:`Distance \u00F7 time: ${dist} miles \u00F7 ${round1(min/60)} hours = ${mph} mph. Speed-time-distance math drives pursuit clocks, ETAs, and violation estimates.`};
+  },
+  dist(){
+    const mph=pick([25,30,35,40,45,50,55,60,65,70]);
+    const min=pick([6,10,12,15,18,20,24,30,36,40,45,48,50,54,60]);
+    const ans=round1(mph*min/60);
+    return{q:`Cruising at ${mph} mph, how far do you travel in ${min} minutes (nearest tenth of a mile)?`,
+      correct:String(ans),wrongs:pickWrongs(ans,[ans+1,ans-1,ans+2,ans-2,ans+.5,ans-.5]).map(round1).map(String),
+      why:`${mph} mph = ${round1(mph/60)} miles per minute. ${round1(mph/60)} \u00D7 ${min} = ${ans} miles.`};
+  },
+  pct(){
+    const p=pick([5,10,15,20,25,30,40,50,60,75]);
+    const N=pick([120,160,200,240,280,300,320,360,400,440,480]);
+    const ans=N*p/100;
+    return{q:`Last month the station filed ${N} incident reports. If ${p}% involved a motor vehicle violation, how many reports was that?`,
+      correct:String(ans),wrongs:pickWrongs(ans,[ans+N/20,ans-N/20,ans+10,ans-10,ans*2]).map(String),
+      why:`${p}% of ${N}: ${N} \u00D7 ${p/100} = ${ans}. Percent work shows up in crime stats and clearance rates constantly.`};
+  },
+  map(){
+    const scale=pick([.5,1,1.5,2,2.5,3,4]);
+    const inch=pick([2,3,4,5,6,7,8,9,10,12]);
+    const ans=round1(scale*inch);
+    return{q:`Your map scale is 1 inch = ${scale} miles. The scene sits ${inch} inches from the barracks on the map. Actual distance?`,
+      correct:String(ans),wrongs:pickWrongs(ans,[scale*2,inch*.5,ans+1,ans-1,ans+scale,ans-scale]).map(round1).map(String),
+      why:`${inch} in \u00D7 ${scale} mi/in = ${ans} miles. Map reading is still a tested skill.`};
+  },
+  shift(){
+    const h=r(5,21),m=pick([0,15,30,45]),len=pick([8,8.5,9,10,11,12]);
+    const total=h*60+m+len*60,eh=Math.floor(total/60)%24,em=total%60;
+    const fmt=(H,M)=>pad(H)+pad(M)+' hrs';
+    const ans=fmt(eh,em);
+    const wrongs=[];
+    [-90,-60,-30,30,60,90].forEach(off=>{
+      let t=(h*60+m+off)%1440;if(t<0)t+=1440;
+      wrongs.push(fmt(Math.floor(t/60),t%60));
+    });
+    const set=[ans];for(const w of shuffle(wrongs)){if(!set.includes(w)&&set.length<4)set.push(w);}
+    const sh=shuffle(set);
+    return{q:`Your shift starts at ${pad(h)}${pad(m)} hours and runs ${len} hours. What time do you go off duty?`,
+      correct:ans,wrongs:set.filter(x=>x!==ans).slice(0,3),
+      why:`${pad(h)}${pad(m)} + ${len} h = ${ans}. Military time is the language of every log entry you will ever write.`,
+      optsOrder:sh};
+  },
+  ratio(){
+    const a=pick([2,3,4]),b=pick([5,6,7]),m=pick([4,5,6,7,8]);
+    const ans=a*m;
+    return{q:`Your troop keeps a staffing ratio of ${a} troopers for every ${b} patrol vehicles. If ${b*m} vehicles are on the road, how many troopers is that?`,
+      correct:String(ans),wrongs:pickWrongs(ans,[a*(m-1),a*(m+1),(a+1)*m]).map(String),
+      why:`${b*m} vehicles \u00F7 ${b} = ${m} groups. ${m} \u00D7 ${a} = ${ans} troopers.`};
+  }
+};
+const PASSAGES=[
+  {title:'CRASH REPORT — TROOP L',text:'At 0742 hours, Unit 214 responded to a two-vehicle collision at the intersection of Route 61 and Mountain Road. A silver sedan traveling south on Route 61 failed to stop for a red signal and struck a pickup truck eastbound on Mountain Road. The sedan\u2019s driver, a 34-year-old female, reported neck pain and was transported by ambulance to the hospital. The pickup\u2019s driver refused medical treatment. Both vehicles were towed from the scene. Roadway conditions were dry and clear.',
+   qs:[
+    {q:'What time was the collision reported?',c:'0742 hours',w:['0700 hours','0724 hours','Not stated'],why:'First sentence: 0742 hours. Reading for exact times is a daily trooper skill.'},
+    {q:'How many drivers refused medical treatment?',c:'One',w:['None','Two','Not stated'],why:'The sedan driver was transported; the pickup driver refused. One refusal.'}]},
+  {title:'BOLO BULLETIN',text:'Be on the lookout for a dark blue Ford pickup, extended cab, bearing Pennsylvania registration JKM-4471. The vehicle displays a paper temporary tag in the rear window and has damage to the front bumper. The occupant is described as a male in his forties with a gray beard, last seen wearing a green hooded sweatshirt. The vehicle was last traveling north on I-81 near Exit 67.',
+   qs:[
+    {q:'Which vehicle should units stop?',c:'Dark blue Ford pickup, plate JKM-4471',w:['Black Chevrolet pickup, plate JKM-4471','Dark blue Ford sedan, plate KJM-4471','Gray Ford pickup, plate JKM-4741'],why:'Every character of a plate matters. One swapped letter stops the wrong citizen.'},
+    {q:'What is the occupant wearing?',c:'A green hooded sweatshirt',w:['A gray jacket','A green jacket','A blue sweatshirt'],why:'"Green hooded sweatshirt" — precise clothing descriptions prevent wrongful stops.'}]},
+  {title:'DEPARTMENT POLICY EXCERPT',text:'Department policy requires that any use of force by a trooper be reported to a supervisor before the end of shift. The supervisor shall respond to the scene, photograph any visible injuries, and complete a use-of-force report within 24 hours. A trooper involved in a use-of-force incident during off-duty employment shall notify the on-duty station commander as soon as practical.',
+   qs:[
+    {q:'When must the use-of-force report be completed?',c:'Within 24 hours',w:['Before the end of shift','Within 48 hours','By the next briefing'],why:'Two deadlines, two different things: the incident is reported before end of shift, the report is completed within 24 hours. Precision reading.'},
+    {q:'An off-duty trooper uses force at secondary employment. He should first:',c:'Notify the on-duty station commander as soon as practical',w:['Complete the report within 24 hours himself','Photograph any injuries himself','Wait for his next scheduled shift'],why:'Straight from the policy: notify the on-duty station commander as soon as practical.'}]},
+  {title:'HOLIDAY WEEKEND STATISTICS',text:'Over the July 4th holiday weekend, Troop L processed 412 traffic stops, issued 287 citations and 96 written warnings, and made 19 driving-under-the-influence arrests. The remaining stops ended in verbal warnings. The troop also investigated 6 reportable crashes, two of which involved injuries.',
+   qs:[
+    {q:'How many stops ended in verbal warnings?',c:'10',w:['9','13','29'],why:'412 \u2212 287 \u2212 96 \u2212 19 = 10. Reading comprehension and arithmetic in the same breath.'},
+    {q:'How many crashes involved injuries?',c:'Two',w:['Six','Four','None'],why:'"Two of which involved injuries" — the answer is in the clause, not the headline number.'}]},
+];
+function buildWritten(){
+  const math=shuffle(Object.values(builders)).map(b=>{
+    const d=b();
+    const order=d.optsOrder||shuffle([d.correct,...d.wrongs]);
+    return{cat:'MATH',q:d.q,opts:order,a:order.indexOf(d.correct),why:d.why};
+  });
+  const p=pick(PASSAGES);
+  const passage=`<div class="passage"><p class="p-tag">${p.title}</p><p>${p.text}</p></div>`;
+  const reading=p.qs.map(x=>{
+    const {opts,a}=shuffleOpts(x.c,x.w);
+    return{cat:'READING',q:x.q,opts,a,why:x.why,passage};
+  });
+  return shuffle([...math,...reading]);
+}
+const WRI={
+  qi:0,score:0,m:0,rq:0,qs:[],
+  start(){
+    this.qi=0;this.score=0;this.m=0;this.rq=0;this.qs=buildWritten();
+    ovMeta('EXAM 300 · WRITTEN BOARD','BRIEFING');
+    phase(`<div class="brief">
+      <p class="tag">EXAMINATION 300 — MATH &amp; READING COMPREHENSION</p>
+      <h2>Written Board</h2>
+      <p>Eight timed questions in the style of the entrance written exam: speed-time-distance, percentages, map scales, shift math, and close reading of reports and bulletins.</p>
+      <p>You get <strong style="color:var(--gold-b)">45 seconds</strong> per question. Every question explains its answer — read it.</p>
+      <p class="dim">25 PTS EACH · MAX 200 PTS</p>
+      <button class="btn btn-gold" id="dgo">Begin examination</button></div>`);
+    $('#dgo').onclick=()=>this.next();
+  },
+  next(){
+    if(this.qi>=this.qs.length)return this.finish();
+    const q=this.qs[this.qi];
+    ovMeta('EXAM 300 · WRITTEN BOARD','QUESTION '+(this.qi+1)+' / 8 · '+q.cat);
+    phase(`<div class="qwrap">${q.passage||''}${mcBody(q)}<div class="qtimer"><div id="qbar"></div></div></div>`);
+    bindMC(q,ok=>{
+      stopBar();
+      if(ok){this.score+=25;q.cat==='MATH'?this.m++:this.rq++;}
+      dT(()=>{this.qi++;this.next();},ok?1200:3200);
+    });
+    runBar(45,()=>{revealTimeout(q);dT(()=>{this.qi++;this.next();},2600);});
+  },
+  finish(){
+    showResults({id:'wri',num:'EXAM 300',name:'WRITTEN BOARD',score:this.score,max:200,lines:[
+      ['MATH',this.m+' / 6'],['READING',this.rq+' / 2'],
+      ['NOTE','EVERY MISSED QUESTION SHOWED ITS WORKING — REREAD IT'],
+    ]});
+  }
+};
+
+/* ================================================================
+   EXAM 400 — RADIO & LAW
+================================================================ */
+const CODES=[
+  ['10-4','Acknowledge / message received'],['10-7','Out of service'],['10-8','In service / available'],
+  ['10-20','Location'],['10-22','Disregard last transmission'],['10-28','Run a license plate / registration check'],
+  ['10-29','Check subject or vehicle for wants / stolen'],['10-31','Crime in progress'],
+  ['10-33','Emergency — all units hold the air'],['10-50','Traffic accident'],['10-52','Ambulance needed'],
+  ['Code 3','Respond with lights and siren'],['Signal 100','Restrict radio traffic to emergencies only'],
+];
+const LAW=[
+  {q:'In Pennsylvania, the legal limit for an adult driver\u2019s blood alcohol content (BAC) is:',c:'0.08%',w:['0.05%','0.10%','0.12%'],why:'0.08% for adults — and just 0.02% for drivers under 21 under zero-tolerance.'},
+  {q:'Drivers under 21 face DUI penalties at a BAC of just:',c:'0.02%',w:['0.08%','0.05%','0.00% only after a crash'],why:'Pennsylvania zero tolerance: 0.02% for under-21 drivers.'},
+  {q:'The maximum speed limit on Pennsylvania interstate highways is:',c:'70 mph',w:['65 mph','55 mph','75 mph'],why:'70 mph on interstates — know it before you enforce it.'},
+  {q:'Under Pennsylvania\u2019s Steer Clear law, passing an emergency scene you should:',c:'Move over one lane if safe, or otherwise slow to at least 20 mph below the limit',w:['Stop in place until the scene clears','Sound your horn while passing','Maintain full speed in your lane'],why:'Steer Clear: change lanes away from the scene if you safely can — if not, slow way down.'},
+  {q:'You must signal a turn at least this far before turning:',c:'100 feet',w:['50 feet','200 feet','30 feet'],why:'100 feet of continuous signal before a turn.'},
+  {q:'When a school bus flashes its red lights, traffic must stop at least:',c:'10 feet away, in both directions',w:['5 feet, behind the bus only','20 feet, behind the bus only','There is no set distance'],why:'Both directions stop, at least 10 feet back, until the red lights stop.'},
+  {q:'Fines for speeding in an active work zone are:',c:'Doubled',w:['Waived','Tripled','Unchanged'],why:'Active work zones: fines doubled — and safety comes before speed, always.'},
+  {q:'As of 2025, holding a phone while driving in Pennsylvania is:',c:'Illegal under Paul Miller\u2019s Law',w:['Legal at red lights','Legal on rural roads','Legal for drivers over 25'],why:'Paul Miller\u2019s Law (2025): no holding a phone while driving, even at a light.'},
+  {q:'A child under age 4 must ride in:',c:'A child passenger safety seat',w:['A booster seat','An adult seat belt','The front seat with airbag off'],why:'Under 4: car seat. Ages 4\u20138: booster. The tiers matter.'},
+  {q:'During a traffic stop, a driver must produce upon request:',c:'License, registration, and proof of insurance',w:['License only','Registration only','Nothing until arrested'],why:'Three documents, every stop: license, registration, insurance.'},
+];
+const CODE={
+  qi:0,score:0,cm:0,lm:0,qs:[],
+  build(){
+    const codes=shuffle(CODES).slice(0,9).map(([code,meaning])=>{
+      const forward=Math.random()<.5;
+      const qTxt=forward?`What does "${code}" mean?`:`Which code means "${meaning}"?`;
+      const correct=forward?meaning:code;
+      const pool=forward?CODES.filter(c=>c[0]!==code).map(c=>c[1]):CODES.filter(c=>c[1]!==meaning).map(c=>c[0]);
+      const {opts,a}=shuffleOpts(correct,pool);
+      return{cat:'CODES',q:qTxt,opts,a,why:`${code} = ${meaning}.`,hint:'SIX SECONDS ON THE CLOCK'};
+    });
+    const law=shuffle(LAW).slice(0,3).map(x=>{
+      const {opts,a}=shuffleOpts(x.c,x.w);
+      return{cat:'LAW',q:x.q,opts,a,why:x.why,hint:'SIX SECONDS ON THE CLOCK'};
+    });
+    this.qs=shuffle([...codes,...law]);
+  },
+  start(){
+    this.qi=0;this.score=0;this.cm=0;this.lm=0;this.build();
+    ovMeta('EXAM 400 · RADIO & LAW','BRIEFING');
+    phase(`<div class="brief">
+      <p class="tag">EXAMINATION 400 — RADIO CODES &amp; PA LAW</p>
+      <h2>Radio &amp; Law</h2>
+      <p>Twelve rapid-fire questions: common ten-codes and radio signals, plus Pennsylvania traffic law every trooper carries cold.</p>
+      <p class="dim">TEN-CODES VARY BETWEEN AGENCIES — THESE ARE COMMON ONES YOU'LL HEAR ON PA DISPATCH TRAFFIC. THE ACADEMY GIVES YOU THE OFFICIAL PSP SET. · MAX 180 PTS</p>
+      <button class="btn btn-gold" id="dgo">Begin examination</button></div>`);
+    $('#dgo').onclick=()=>this.next();
+  },
+  next(){
+    if(this.qi>=this.qs.length)return this.finish();
+    const q=this.qs[this.qi];
+    ovMeta('EXAM 400 · RADIO & LAW','QUESTION '+(this.qi+1)+' / 12 · '+q.cat);
+    phase(`<div class="qwrap">${mcBody(q)}<div class="qtimer"><div id="qbar"></div></div></div>`);
+    bindMC(q,ok=>{
+      stopBar();
+      if(ok){this.score+=15;q.cat==='CODES'?this.cm++:this.lm++;}
+      dT(()=>{this.qi++;this.next();},ok?900:2400);
+    });
+    runBar(6,()=>{revealTimeout(q);dT(()=>{this.qi++;this.next();},2200);});
+  },
+  finish(){
+    showResults({id:'code',num:'EXAM 400',name:'RADIO & LAW',score:this.score,max:180,lines:[
+      ['TEN-CODES',this.cm+' / 9'],['PA LAW',this.lm+' / 3'],
+      ['STUDY TIP','TEN MINUTES OF FLASHCARDS A DAY BEATS ONE CRAM NIGHT'],
+    ]});
+  }
+};
+
+/* ================================================================
+   EXAM 500 — SPLIT SECOND
+================================================================ */
+const RX={
+  trials:15,seq:[],i:0,res:[],shown:false,done:false,curType:null,curCell:null,
+  timers:[],
+  t(fn,ms){const id=setTimeout(fn,ms);this.timers.push(id);},
+  clear(){this.timers.forEach(clearTimeout);this.timers=[];},
+  start(){
+    this.clear();
+    if(document.activeElement)document.activeElement.blur();
+    this.seq=shuffle([...Array(10).fill('GO'),...Array(5).fill('NOGO')]);
+    this.i=0;this.res=[];
+    ovMeta('EXAM 500 · SPLIT SECOND','BRIEFING');
+    phase(`<div class="brief">
+      <p class="tag">EXAMINATION 500 — GO / NO-GO REACTION</p>
+      <h2>Split Second</h2>
+      <p>Fifteen trials in a 3\u00D73 grid. A <strong style="color:var(--gold-b)">gold target</strong> means respond — click it or hit <strong>SPACE</strong>. A navy square with a gold \u2715 means hold: an officer who cannot hold fire is more dangerous than one who is slow.</p>
+      <p class="dim">MAX 150 PTS · YOUR AVERAGE REACTION TIME IS TRACKED</p>
+      <button class="btn btn-gold" id="dgo">Begin examination</button></div>`);
+    $('#dgo').onclick=()=>this.run();
+  },
+  run(){
+    ovMeta('EXAM 500 · SPLIT SECOND','TRIAL '+(this.i+1)+' / '+this.trials);
+    phase(`<div class="arena">
+      <div class="arena-status mono"><span id="rxTrial">TRIAL ${this.i+1} / ${this.trials}</span><span id="rxScore">SCORE 0</span></div>
+      <div class="rx-grid" id="rxGrid">${Array.from({length:9},()=>'<div class="rx-cell"></div>').join('')}</div>
+      <p class="q-hint mono hint">GOLD TARGET = RESPOND (CLICK OR SPACE) · NAVY \u2715 = HOLD</p></div>`);
+    this.show();
+  },
+  show(){
+    if(this.i>=this.trials)return this.finish();
+    $('#rxTrial').textContent='TRIAL '+(this.i+1)+' / '+this.trials;
+    this.shown=false;this.done=false;this.curType=null;this.curCell=null;
+    this.t(()=>{
+      const cells=document.querySelectorAll('.rx-cell');
+      const cell=cells[r(0,8)];
+      const type=this.seq[this.i];
+      cell.innerHTML=type==='GO'
+        ?'<div class="stim go"></div>'
+        :'<div class="stim nogo"><svg viewBox="0 0 24 24"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="3" fill="none"/></svg></div>';
+      cell.querySelector('.stim').onclick=()=>this.respond();
+      this.curType=type;this.curCell=cell;this.shown=true;
+      this.t0=performance.now();
+      if(type==='GO'){
+        this.t(()=>{
+          if(this.done)return;
+          this.done=true;this.res.push({t:'GO',ok:false});
+          this.flash(cell,'bad');S.wrong();
+          this.clearCell();
+        },900);
+      }else{
+        this.t(()=>{
+          if(this.done)return;
+          this.done=true;this.res.push({t:'NOGO',ok:true});
+          this.flash(cell,'good');S.tick();
+          this.clearCell();
+        },900);
+      }
+    },r(700,1500));
+  },
+  respond(){
+    if(!this.shown||this.done)return;
+    this.done=true;
+    const cell=this.curCell,type=this.curType;
+    if(type==='GO'){
+      const rt=Math.round(performance.now()-this.t0);
+      this.res.push({t:'GO',ok:true,rt});
+      this.flash(cell,'good');S.correct();
+    }else{
+      this.res.push({t:'NOGO',ok:false});
+      this.flash(cell,'bad');S.wrong();
+    }
+    this.clearCell();
+  },
+  clearCell(){
+    if(this.curCell)this.curCell.innerHTML='';
+    const s=this.res.reduce((a,x)=>a+(x.ok?(x.t==='GO'?12:6):0),0);
+    const el=$('#rxScore');if(el)el.textContent='SCORE '+s;
+    this.i++;
+    this.t(()=>this.show(),380);
+  },
+  flash(cell,cls){
+    cell.classList.add(cls);
+    this.t(()=>cell.classList.remove(cls),280);
+  },
+  finish(){
+    const hits=this.res.filter(x=>x.t==='GO'&&x.ok).length;
+    const miss=this.res.filter(x=>x.t==='GO'&&!x.ok).length;
+    const fa=this.res.filter(x=>x.t==='NOGO'&&!x.ok).length;
+    const holds=this.res.filter(x=>x.t==='NOGO'&&x.ok).length;
+    const score=hits*12+holds*6;
+    const rts=this.res.filter(x=>x.rt).map(x=>x.rt);
+    const avg=rts.length?Math.round(rts.reduce((a,b)=>a+b,0)/rts.length):0;
+    let rtPB=false;
+    if(avg&&(!state.pb.rt||avg<state.pb.rt)){state.pb.rt=avg;rtPB=true;save();}
+    showResults({id:'reflex',num:'EXAM 500',name:'SPLIT SECOND',score,max:150,lines:[
+      ['HITS',hits+' / 10'],['FALSE ALARMS',fa+' / 5'],
+      ['MISSED TARGETS',miss+' / 10'],
+      ['AVG REACTION',avg?avg+' MS':'—'],
+      ['BEST REACTION',state.pb.rt?state.pb.rt+' MS'+(rtPB?' · NEW RECORD':''):'—'],
+    ]});
+  }
+};
+
+/* ================================================================
+   STUDY HALL DRILL — FLASHCARD RANGE
+================================================================ */
+const FLASH={
+  cards:[],i:0,known:0,flipped:false,cardEl:null,
+  build(){
+    this.cards=shuffle(CODES).map(([code,meaning])=>
+      Math.random()<.5?{f:code,b:meaning,tag:code}:{f:meaning,b:code,tag:code});
+  },
+  start(){
+    this.build();this.i=0;this.known=0;
+    ovMeta('S1 · FLASHCARD RANGE','BRIEFING');
+    phase(`<div class="brief">
+      <p class="tag">STUDY HALL — FLASHCARD RANGE</p>
+      <h2>Ten-Code Deck</h2>
+      <p>Thirteen cards, shuffled, mixed directions — sometimes the code appears, sometimes the meaning. Flip each card, then grade yourself honestly: the system only works if you do.</p>
+      <p class="dim">+5 PTS PER CARD YOU KNEW · MAX 65 PTS · RUN IT DAILY (LESSON 106)</p>
+      <button class="btn btn-gold" id="dgo">Deal the deck</button></div>`);
+    $('#dgo').onclick=()=>this.next();
+  },
+  next(){
+    if(this.i>=this.cards.length)return this.finish();
+    this.flipped=false;
+    const c=this.cards[this.i];
+    ovMeta('S1 · FLASHCARD RANGE',`CARD ${this.i+1} / ${this.cards.length} · KNEW ${this.known}`);
+    phase(`<div class="fwrap">
+      <div class="fcard" id="fcard"><div class="finner">
+        <div class="fface ffront">
+          <p class="f-tag mono">CARD ${this.i+1} — CLICK OR SPACE TO FLIP</p>
+          <p class="f-big cond">${c.f}</p>
+        </div>
+        <div class="fface fback">
+          <p class="f-tag mono">MEANING</p>
+          <p class="f-big cond" style="font-size:clamp(1.3rem,3.4vw,1.9rem)">${c.b}</p>
+          <p class="f-sub mono">CODE: ${c.tag}</p>
+        </div>
+      </div></div>
+      <div class="fgrade" id="fgrade">
+        <button class="btn btn-ghost lt btn-sm" id="fNo">Still training [2]</button>
+        <button class="btn btn-gold btn-sm" id="fYes">Knew it +5 [1]</button>
+      </div>
+      <p class="q-hint mono">SPACE = FLIP · 1 = KNEW IT · 2 = STILL TRAINING</p></div>`);
+    this.cardEl=$('#fcard');
+    this.cardEl.onclick=()=>this.flip();
+    $('#fNo').onclick=()=>this.grade(false);
+    $('#fYes').onclick=()=>this.grade(true);
+  },
+  flip(){
+    if(this.flipped)return;
+    this.flipped=true;S.blip();
+    this.cardEl.classList.add('flipped');
+    $('#fgrade').classList.add('ready');
+  },
+  grade(ok){
+    if(!this.flipped)return;
+    ok?(this.known++,S.correct()):S.wrong();
+    this.i++;this.next();
+  },
+  finish(){
+    const n=this.cards.length;
+    showResults({id:'flash',num:'S1',name:'FLASHCARD RANGE',score:this.known*5,max:n*5,lines:[
+      ['CARDS KNEW',this.known+' / '+n],
+      ['STILL TRAINING',(n-this.known)+' CARDS'],
+      ['METHOD','SPACED REPETITION — RUN THIS DAILY'],
+    ]});
+  }
+};
+
+/* ================================================================
+   LESSONS
+================================================================ */
+const PHONETIC=['ADAM','BOY','CHARLES','DAVID','EDWARD','FRANK','GEORGE','HENRY','IDA','JOHN','KING','LINCOLN','MARY','NORA','OCEAN','PAUL','QUEEN','ROBERT','SAM','TOM','UNION','VICTOR','WILLIAM','X-RAY','YOUNG','ZEBRA'];
+const codeTable=`<table class="ctable"><thead><tr><th>CODE</th><th>MEANING</th></tr></thead><tbody>
+ ${CODES.map(([c,m])=>`<tr><td>${c}</td><td>${m}</td></tr>`).join('')}</tbody></table>`;
+const phonGrid=`<div class="phab">${PHONETIC.map((w,i)=>`<span><b>${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]}</b> — ${w}</span>`).join('')}</div>`;
+
+const LESSONS=[
+{id:'l101',num:'101',title:'Observation & Memory',min:'7 MIN',train:['BOLO Recall','obs'],body:`
+  <h4>Why observation fails</h4>
+  <p>Witnesses — and even experienced officers — lose details for one reason: the information was never truly encoded. Looking is not recording. A trooper's edge is a set of habits that force the brain to commit details to memory at the moment of contact, because you cannot recall what you never noticed.</p>
+  <h4>Technique 1 — The five-point habit</h4>
+  <p>Every vehicle you pass today, silently log five things: <strong>color · make · plate · direction · one occupant detail</strong>. Say them in your head as a sentence: "Gray Charger, plate Charlie-King-George, northbound, driver in a cap." Naming forces encoding.</p>
+  <h4>Technique 2 — Plate chunking</h4>
+  <p>Nobody memorizes eight characters as one string. Break the plate into two chunks of four, repeat each chunk twice, then chain them: <em>KGX · 2290</em>. Chunks survive short-term memory far better than one long string — it is the same trick your phone number uses.</p>
+  <h4>Technique 3 — The 10-second replay</h4>
+  <p>The single most powerful memory tool is immediate self-testing. Ten seconds after you leave any scene — a room, a car, a conversation — recall three details before you do anything else. Psychologists call this the <em>testing effect</em>: retrieving a memory strengthens it far more than seeing it again.</p>
+  <h4>Technique 4 — Attach a story</h4>
+  <p>Brains remember narratives, not lists. "Red pickup, loud exhaust, turned toward the school" is a story; "red pickup" is a fact that will evaporate by dinner.</p>
+  <div class="kp"><strong>KEY POINTS</strong><ul>
+    <li>You cannot remember what you never noticed — encode on contact.</li>
+    <li>Chunk plates into fours and speak them.</li>
+    <li>Self-test within 10 seconds; retrieval builds memory.</li>
+    <li>Turn details into short stories.</li></ul></div>`},
+{id:'l102',num:'102',title:'Radio Procedure & Ten-Codes',min:'8 MIN',train:['Radio & Law','code'],body:`
+  <h4>Clean radio is professional radio</h4>
+  <p>Radio discipline is one of the first things evaluators notice. The rules are simple: listen before you key the mic, press — pause one second — then speak (most radios clip your first word), keep transmissions short, and always identify yourself. Common procedure words you will hear: <strong>"copy"</strong> (understood), <strong>"en route"</strong> (heading there), <strong>"on scene"</strong> (arrived), <strong>"clear"</strong> (finished and available).</p>
+  <h4>Common codes you will hear on PA dispatch traffic</h4>
+  ${codeTable}
+  <p><em>Important: ten-codes vary between agencies. This table covers widely used ones; the Academy will issue the official PSP set. Learn the concept — codes are just a fast, standard language.</em></p>
+  <h4>The phonetic alphabet</h4>
+  <p>Plates and names are spelled with words, never bare letters — "B" sounds like "D" over a bad radio. The traditional U.S. police phonetic alphabet:</p>
+  ${phonGrid}
+  <div class="kp"><strong>KEY POINTS</strong><ul>
+    <li>Listen, key, pause, speak — short and steady.</li>
+    <li>Spell with phonetics: "BOB" = Adam-William-Adam... wait — that is the point: no. It is "Boy-William-Boy."</li>
+    <li>Know both directions: code → meaning AND meaning → code.</li>
+    <li>The Academy issues the official set; your job is fluency in the pattern.</li></ul></div>`},
+{id:'l103',num:'103',title:'PA Traffic Law Essentials',min:'9 MIN',train:['Radio & Law','code'],body:`
+  <h4>The numbers every Pennsylvania trooper carries cold</h4>
+  <ul>
+    <li><strong>DUI tiers:</strong> general impairment 0.08–0.099% BAC · high 0.10–0.159% · highest 0.16%+. Under 21: zero tolerance at 0.02%. Commercial drivers: 0.04%.</li>
+    <li><strong>Speed:</strong> interstates up to 70 mph; the posted limit always governs.</li>
+    <li><strong>School buses:</strong> flashing red lights — traffic stops at least 10 feet away, in <em>both</em> directions, until the lights stop.</li>
+    <li><strong>Active work zones:</strong> fines doubled when workers are present.</li>
+    <li><strong>Steer Clear:</strong> passing an emergency scene — move over one lane if safe; if not, slow to at least 20 mph below the limit.</li>
+    <li><strong>Paul Miller's Law (2025):</strong> holding a phone while driving is illegal — even at a red light.</li>
+    <li><strong>Turns:</strong> signal continuously at least 100 feet; right-on-red is permitted after a full stop unless posted otherwise.</li>
+    <li><strong>Child passengers:</strong> under 2 rear-facing (recommended/required), under 4 in a car seat, ages 4–8 in a booster.</li>
+    <li><strong>Every stop:</strong> driver must produce license, registration, and proof of insurance.</li>
+  </ul>
+  <h4>How to actually learn statute</h4>
+  <p>Do not memorize the Vehicle Code front to back. Learn the <em>numbers that change behavior</em> — limits, distances, ages, thresholds — and read the actual text of Title 75 online when a number matters. When you write a citation someday, the exact subsection is on it.</p>
+  <div class="kp"><strong>KEY POINTS</strong><ul>
+    <li>0.08 / 0.02 / 0.04 — three BAC thresholds, three audiences.</li>
+    <li>School bus = both directions, 10 feet.</li>
+    <li>Work zone = double fines. Steer Clear = move over or slow 20 under.</li>
+    <li>Laws change (Paul Miller's Law is brand new) — re-verify yearly.</li></ul></div>`},
+{id:'l104',num:'104',title:'Report Writing',min:'6 MIN',train:['Written Board','wri'],body:`
+  <h4>Facts, not conclusions</h4>
+  <p>A report is a sworn document that prosecutors, judges, and defense attorneys will read word by word. It contains what you <em>observed</em> — never what you <em>concluded</em>. "I detected a strong odor of an alcoholic beverage" is a fact you perceived. "He was drunk" is a conclusion a defense attorney will shred.</p>
+  <div class="duo">
+    <div><p class="duo-tag">WEAK — CONCLUSIONS</p><p>"Driver was drunk and driving bad. I knew he was lying."</p></div>
+    <div><p class="duo-tag">STRONG — FACTS</p><p>"The vehicle crossed the center line twice. I detected a strong odor of an alcoholic beverage on Smith's breath. Smith stated he had 'two beers.' Field sobriety tests were administered."</p></div>
+  </div>
+  <h4>The rules</h4>
+  <ul>
+    <li><strong>Chronological order.</strong> From first contact to last, in time order.</li>
+    <li><strong>Complete:</strong> who, what, when, where, how. "Why" only if someone stated it — and attribute it.</li>
+    <li><strong>Quotes for statements.</strong> If the witness said it, put it in quotation marks, word for word.</li>
+    <li><strong>No opinions, no slant, no gaps.</strong> If you did not see it, write who did.</li>
+    <li><strong>Prompt and neat.</strong> Memory decays by the hour; good reports are written the same shift.</li>
+  </ul>
+  <div class="kp"><strong>KEY POINTS</strong><ul>
+    <li>Observations in, conclusions out.</li>
+    <li>Chronological, complete, quoted, attributed.</li>
+    <li>The report is the case — write it like it matters, because it does.</li></ul></div>`},
+{id:'l105',num:'105',title:'Judgment, Ethics & De-escalation',min:'8 MIN',train:['Field Judgment','sj'],body:`
+  <h4>The priority ladder</h4>
+  <p>When a situation is chaos, rank your duties in this order: <strong>1) Life safety</strong> — yours, the public's, then the subject's. <strong>2) Legal duty</strong> — what the law requires of you right now. <strong>3) Procedure</strong> — policy, reports, notifications. Every good split-second decision can be traced back up this ladder.</p>
+  <h4>De-escalation — the tactical basics</h4>
+  <ul>
+    <li><strong>Time, distance, cover.</strong> Buying all three is not weakness — it is the tactic that ends most fights before they start.</li>
+    <li><strong>One voice, low and slow.</strong> People mirror tone. A calm voice de-escalates; a shouted command escalates.</li>
+    <li><strong>Give options, not ultimatums.</strong> "You can step over here and talk to me, or we can do this the hard way" beats "DO IT NOW."</li>
+    <li><strong>Call for help early.</strong> Asking for backup is a sign of judgment, not weakness.</li>
+  </ul>
+  <h4>Ethics — the non-negotiables</h4>
+  <p>Discretion is real: troopers warn, cite, or arrest based on the situation. But discretion must be <em>consistent and explainable</em> — the same facts should get the same decision regardless of who is standing there. And integrity has no gray area: what you see, you report, through the chain of command, every time. One dishonest trooper damages the trust ten thousand honest ones build.</p>
+  <div class="kp"><strong>KEY POINTS</strong><ul>
+    <li>Life safety → legal duty → procedure.</li>
+    <li>Time, distance, cover, one calm voice.</li>
+    <li>Discretion: consistent and explainable.</li>
+    <li>Integrity: the hard right over the easy wrong.</li></ul></div>`},
+{id:'l106',num:'106',title:'Memory Masterclass — Study Like the Academy',min:'7 MIN',train:['Flashcard Range','flash'],body:`
+  <h4>Spaced repetition — the schedule that works</h4>
+  <p>Your brain deletes information it does not re-use. Spaced repetition defeats the forgetting curve by testing you right before you would forget:</p>
+  <ul><li><strong>Day 0</strong> — learn it. <strong>Day 1</strong> — first review. <strong>Day 3</strong> — second. <strong>Day 7</strong> — third. <strong>Day 14</strong> — fourth. Then weekly.</li></ul>
+  <p>The Flashcard Range in the Study Hall is built for exactly this: run the deck daily, and the cards you miss come back naturally because you will see them again tomorrow.</p>
+  <h4>Four more tools</h4>
+  <ul>
+    <li><strong>Chunking</strong> — Lesson 101. Groups of 3–4 beats strings of 8.</li>
+    <li><strong>Memory palace</strong> — place items in rooms of your house: "the 10-33 is on the kitchen table because it's an emergency I'd run to." Absurd = memorable.</li>
+    <li><strong>Dual coding</strong> — say it aloud AND picture it. Two channels in, twice the retrieval paths out.</li>
+    <li><strong>Sleep</strong> — memory consolidates during sleep. A 15-minute review before bed outperforms an hour of afternoon cramming.</li>
+  </ul>
+  <h4>Your daily 15 minutes</h4>
+  <p>Five minutes of flashcards, five minutes of one examination, five minutes recalling yesterday's lesson's key points <em>from memory before re-reading</em>. That's it. Consistency beats intensity — 15 minutes a day for a year makes you the recruit who already knows the material on day one at Hershey.</p>
+  <div class="kp"><strong>KEY POINTS</strong><ul>
+    <li>Test right before you'd forget: 1 · 3 · 7 · 14 days.</li>
+    <li>Retrieval (self-testing) builds memory; re-reading barely does.</li>
+    <li>Chunk, visualize, speak, sleep.</li>
+    <li>15 honest minutes daily beats 3 hours once a week.</li></ul></div>`},
+];
+
+function renderLessons(){
+  $('#lessonList').innerHTML=LESSONS.map(l=>`
+    <article class="lesson" data-id="${l.id}">
+      <button class="l-head" aria-expanded="false">
+        <span class="l-num">LESSON ${l.num}</span>
+        <span class="l-title">${l.title}</span>
+        <span class="l-meta">${l.min} · +25 PTS</span>
+        <span class="l-chip ${state.lessons[l.id]?'done':''}">${state.lessons[l.id]?'RECORDED ✓':'INCOMPLETE'}</span>
+        <svg class="l-caret" width="18" height="18" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>
+      </button>
+      <div class="l-body">
+        ${l.body}
+        <div class="l-foot">
+          <button class="btn btn-navy btn-sm l-mark" ${state.lessons[l.id]?'disabled style="opacity:.5;cursor:default"':''}>${state.lessons[l.id]?'Lesson recorded ✓':'Mark complete +25 pts'}</button>
+          <button class="btn btn-ghost btn-sm l-train">Train it now: ${l.train[0]}</button>
+        </div>
+      </div>
+    </article>`).join('');
+  document.querySelectorAll('.lesson').forEach(art=>{
+    const id=art.dataset.id;
+    art.querySelector('.l-head').onclick=()=>{
+      art.classList.toggle('open');
+      art.querySelector('.l-head').setAttribute('aria-expanded',art.classList.contains('open'));
+    };
+    art.querySelector('.l-mark').onclick=e=>{
+      if(state.lessons[id])return;
+      state.lessons[id]=true;save();
+      grant(25);S.correct();
+      toast('LESSON '+id.slice(1)+' RECORDED · +25 PTS');
+      e.target.textContent='Lesson recorded ✓';
+      e.target.disabled=true;e.target.style.opacity=.5;e.target.style.cursor='default';
+      const chip=art.querySelector('.l-chip');
+      chip.textContent='RECORDED ✓';chip.classList.add('done');
+      renderRank();
+    };
+    art.querySelector('.l-train').onclick=()=>{
+      const l=LESSONS.find(x=>x.id===id);
+      openDrill(l.train[1]);
+    };
+  });
+}
+
+/* ================================================================
+   VIDEO RANGE (honest live-search links)
+================================================================ */
+const VIDEOS=[
+  {t:'PSP Academy & Cadet Life',d:'Watch real cadets at Hershey — inspections, PT, defensive tactics, graduation. See exactly what you are training for.',q:'Pennsylvania State Police academy cadet training'},
+  {t:'A Trooper\u2019s Day on Patrol',d:'Ride-alongs, vehicle tours, and recruit diaries from actual troopers. Builds the mental picture of the job.',q:'Pennsylvania State Police trooper patrol ride along'},
+  {t:'Written Exam Prep — Math & Reading',d:'Worked examples of speed-distance-time, percentages, and reading comprehension under time limits.',q:'police written exam math reading comprehension practice'},
+  {t:'Observation & Memory Drills',d:'Witness-description and detail-recognition exercises you can run alongside the BOLO exam here.',q:'police observation memory training exercise'},
+  {t:'Ten-Codes & Real Radio Traffic',d:'Hear live dispatch traffic with codes in context — the fastest way to make them feel natural.',q:'Pennsylvania police scanner radio traffic 10 codes'},
+  {t:'Memory Science, Explained',d:'Short, visual explainers on spaced repetition and memory palaces — the research behind Lesson 106.',q:'spaced repetition memory palace explained'},
+];
+function renderVideos(){
+  $('#videoGrid').innerHTML=VIDEOS.map(v=>`
+    <a class="vcard" href="https://www.youtube.com/results?search_query=${encodeURIComponent(v.q)}" target="_blank" rel="noopener">
+      <span class="v-tag">YOUTUBE — LIVE SEARCH</span>
+      <h3>${v.t}</h3>
+      <p>${v.d}</p>
+      <span class="v-go">OPEN SEARCH ↗</span>
+    </a>`).join('')+`
+    <div class="vnote"><b>HOW TO USE THE VIDEO RANGE:</b> video uploads change constantly, so these cards open live, current searches instead of fixed embeds — the top results are typically official PSP and academy-channel uploads. Subscribe to the official "Pennsylvania State Police" channel, then rule: watch 10 minutes, immediately run the matching examination on this page. Watch → drill → it sticks.</div>`;
+}
+
+/* ================================================================
+   SYLLABUS + HABITS + RECORDS + BOOT
+================================================================ */
+const DRILLS=[
+  {id:'obs',num:'100',name:'Bolo Recall',max:200,desc:'A BOLO flashes on the screen for seconds — plates, vehicles, faces — then it is gone. Report exactly what you saw.'},
+  {id:'sj',num:'200',name:'Field Judgment',max:200,desc:'Ten real street scenarios. Pick the course of action a trooper is trained to take, then read why it matters.'},
+  {id:'wri',num:'300',name:'Written Board',max:200,desc:'Timed math and reading comprehension — the same skill blocks as the actual entrance written examination.'},
+  {id:'code',num:'400',name:'Radio & Law',max:180,desc:'Ten-codes, radio procedure, and Pennsylvania traffic law — under a six-second clock.'},
+  {id:'reflex',num:'500',name:'Split Second',max:150,desc:'Go / no-go reaction training. Respond to threats, hold on civilians. Your milliseconds are measured.'},
+];
+const MODULES={obs:OBS,sj:SJD,wri:WRI,code:CODE,reflex:RX,flash:FLASH};
+ $('#openFlash').onclick=()=>openDrill('flash');
+
+function renderSyllabus(){
+  $('#syllabus').innerHTML=DRILLS.map(d=>`
+    <li class="drill-row" data-id="${d.id}" tabindex="0" role="button" aria-label="Start ${d.name}">
+      <span class="d-num"><span class="cap">EXAM</span><span class="n">${d.num}</span></span>
+      <div class="d-main"><h3>${d.name}</h3><p>${d.desc}</p></div>
+      <div class="d-side mono"><span class="pb">PB ${state.pb[d.id]||0} PTS</span><br><span>MAX ${d.max} PTS</span></div>
+      <span class="d-go"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></span>
+    </li>`).join('');
+  document.querySelectorAll('.drill-row').forEach(row=>{
+    row.onclick=()=>openDrill(row.dataset.id);
+    row.onkeydown=e=>{if(e.key==='Enter')openDrill(row.dataset.id);};
+  });
+}
+
+/* daily habits card */
+const HABITS=[
+  '30+ minutes of cardio (run, bike, ruck)','Push-ups & sit-ups to failure, twice',
+  'One examination in the range','Daily 15 — flashcards + lesson recall',
+  'Read one section of the PA Vehicle Code (Title 75)',
+];
+function renderHabits(){
+  const today=new Date().toISOString().slice(0,10);
+  if(state.habits.date!==today){state.habits={date:today,chk:[false,false,false,false,false]};save();}
+  const list=$('#habitList');
+  list.innerHTML=HABITS.map((t,i)=>`
+    <li><label><input type="checkbox" data-i="${i}" ${state.habits.chk[i]?'checked':''}>
+    <span class="box"></span><span class="htxt">${t}</span></label></li>`).join('');
+  const upd=()=>{
+    const n=state.habits.chk.filter(Boolean).length;
+    $('#habitCount').textContent='TODAY — '+n+'/5 COMPLETE';
+  };
+  list.querySelectorAll('input').forEach(inp=>{
+    inp.onchange=()=>{
+      state.habits.chk[+inp.dataset.i]=inp.checked;save();
+      inp.checked?S.correct():S.tick();upd();
+    };
+  });
+  upd();
+}
+
+/* records tables */
+function renderRecords(){
+  const i=rankIdx(state.pts);
+  $('#rankTable tbody').innerHTML=RANKS.map((x,k)=>{
+    const st=k===i?'<span class="st" style="color:var(--gold-d);font-weight:600">◆ CURRENT RANK</span>'
+      :k<i?'<span class="st" style="color:#1F7A4D">✓ ACHIEVED</span>'
+      :'<span class="st">—</span>';
+    return `<tr class="${k===i?'cur':k<i?'ach':''}"><td>${x[1]}</td><td>${x[0].toLocaleString()} PTS</td><td>${st}</td></tr>`;
+  }).join('');
+  const rows=DRILLS.map(d=>[d.num+' · '+d.name.toUpperCase(),state.pb[d.id]||0,d.max]);
+  rows.push(['S1 · FLASHCARD RANGE',state.pb.flash||0,65]);
+  rows.push(['BEST REACTION TIME (MS)',state.pb.rt?state.pb.rt+' MS':'—','']);
+  $('#pbTable tbody').innerHTML=rows.map(x=>
+    `<tr><td>${x[0]}</td><td>${x[2]!==''?x[1]+' / '+x[2]:x[1]}</td></tr>`).join('');
+}
+
+renderSyllabus();renderLessons();renderVideos();renderRank();renderScore();renderHabits();renderRecords();
+</script>
+</body>
+</html>
